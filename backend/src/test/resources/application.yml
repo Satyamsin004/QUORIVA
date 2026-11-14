@@ -1,0 +1,67 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: cs-scholar-backend-test
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:cs_scholar_db}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres_dev_password}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+ai-service:
+  url: http://localhost:8000
+  internal-key: cs_scholar_internal_service_secret_key_change_in_production
+
+jwt:
+  secret: cs_scholar_ai_super_secure_jwt_secret_key_for_development_minimum_256_bits_length!
+  access-token-expiration-ms: 900000
+  refresh-token-expiration-ms: 604800000
+
+security:
+  rate-limiting:
+    enabled: false
+  antivirus:
+    clamav:
+      enabled: false
+      required: false
+      host: localhost
+      port: 3310
+      timeout-ms: 5000
+
+storage:
+  s3:
+    endpoint: http://localhost:9000
+    region: us-east-1
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket: cs-scholar-documents
+    path-style-access: true
+    presigned-url-expiration-seconds: 900
+    max-file-size-bytes: 52428800

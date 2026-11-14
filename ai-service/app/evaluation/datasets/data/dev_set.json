@@ -1,0 +1,697 @@
+[
+  {
+    "case_id": "eval-dev-pf-01",
+    "subject": "Programming Fundamentals",
+    "topic": "Recursion and Memory",
+    "question": "What is the role of the call stack in recursion and what causes a stack overflow?",
+    "expected_answer": "Recursion uses the call stack to store execution frames for each recursive invocation. A missing base case causes unbounded frame allocations leading to a stack overflow.",
+    "key_facts": [
+      "Each recursive call allocates a new stack frame",
+      "Stack frames store local variables, parameters, and return addresses",
+      "A base case is required to stop recursion",
+      "Missing base case causes stack overflow"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "99dfe11b-a600-575f-8a6a-49bbf234549a"
+    ],
+    "graded_relevance": {
+      "99dfe11b-a600-575f-8a6a-49bbf234549a": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "BEGINNER",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-pf-02",
+    "subject": "Programming Fundamentals",
+    "topic": "Memory Management",
+    "question": "Compare stack and heap memory allocation in terms of lifetime and management.",
+    "expected_answer": "Stack memory is automatically managed with LIFO scope lifetime, whereas heap memory is dynamically managed with lifetimes spanning beyond function calls.",
+    "key_facts": [
+      "Stack allocation is automatic and deterministic",
+      "Heap allocation is dynamic at runtime",
+      "Heap objects survive function returns",
+      "Heap requires garbage collection or manual deallocation"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "f715c9c9-0bae-540d-a272-d1e942037cbd"
+    ],
+    "graded_relevance": {
+      "f715c9c9-0bae-540d-a272-d1e942037cbd": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "COMPARISON",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-dsa-01",
+    "subject": "Data Structures and Algorithms",
+    "topic": "Binary Search Trees",
+    "question": "What is the worst-case search complexity in an unbalanced binary search tree and why does it degrade?",
+    "expected_answer": "In an unbalanced BST, inserting elements in sorted order causes the tree to degenerate into a linked list with worst-case O(N) search complexity.",
+    "key_facts": [
+      "Worst-case search complexity in an unbalanced BST is O(N)",
+      "Sorted insertions cause degeneration into a linked list",
+      "Balanced BST search is O(log N)"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "517f5fca-8204-5a4e-8e65-7a23d23da4cf"
+    ],
+    "graded_relevance": {
+      "517f5fca-8204-5a4e-8e65-7a23d23da4cf": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "BEGINNER",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-dsa-02",
+    "subject": "Data Structures and Algorithms",
+    "topic": "AVL Trees",
+    "question": "How do AVL tree rotations restore height balance when balance factor invariants are violated?",
+    "expected_answer": "AVL trees maintain a balance factor between -1 and +1; when violated, single or double rotations restore height balance bounded by 1.44*log2(N).",
+    "key_facts": [
+      "AVL balance factor is height(left) - height(right)",
+      "Allowed balance factors are -1, 0, +1",
+      "Single (LL, RR) or double (LR, RL) rotations restore balance",
+      "Guarantees O(log N) operations"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "0c86bcc1-dbb0-5825-92cf-d3b4a075094f"
+    ],
+    "graded_relevance": {
+      "0c86bcc1-dbb0-5825-92cf-d3b4a075094f": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-db-01",
+    "subject": "Database Management Systems",
+    "topic": "Transaction Processing",
+    "question": "Explain the difference between dirty reads and non-repeatable reads in transaction isolation.",
+    "expected_answer": "A dirty read occurs when a transaction reads uncommitted modifications, whereas a non-repeatable read occurs when re-reading committed changes from another concurrent transaction yields different values.",
+    "key_facts": [
+      "Dirty reads access uncommitted changes",
+      "Read Committed isolation prevents dirty reads",
+      "Non-repeatable reads occur when committed updates change row values",
+      "Repeatable Read prevents non-repeatable reads"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "08d8fa4c-418d-58f3-8049-29e861eeb9b8"
+    ],
+    "graded_relevance": {
+      "08d8fa4c-418d-58f3-8049-29e861eeb9b8": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-db-02",
+    "subject": "Database Management Systems",
+    "topic": "Relational Normalization",
+    "question": "What condition distinguishes Boyce-Codd Normal Form (BCNF) from Third Normal Form (3NF)?",
+    "expected_answer": "In 3NF, the right-hand side of a functional dependency may be a prime attribute, whereas in BCNF, every determinant must strictly be a superkey.",
+    "key_facts": [
+      "3NF allows non-superkey determinants if the dependent attribute is prime",
+      "BCNF requires every determinant X in X -> A to be a superkey",
+      "BCNF is strictly stronger than 3NF"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "221775c6-68fd-5d0b-b0ce-05115ccd7a1a"
+    ],
+    "graded_relevance": {
+      "221775c6-68fd-5d0b-b0ce-05115ccd7a1a": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "COMPARISON",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-os-01",
+    "subject": "Operating Systems",
+    "topic": "Virtual Memory",
+    "question": "How does the page table and TLB translate a virtual page number to a physical frame number?",
+    "expected_answer": "The MMU first consults the hardware TLB cache for the VPN-to-PFN mapping; on a TLB miss, it executes a hierarchical page table walk before caching the translation.",
+    "key_facts": [
+      "Virtual memory maps virtual page numbers to physical frame numbers",
+      "TLB is a fast hardware cache for page translations",
+      "TLB misses trigger multi-level page table walks",
+      "Page faults occur when pages are not present in physical memory"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "81bf1e75-9ee7-50e6-b58e-c9db0a746bd4"
+    ],
+    "graded_relevance": {
+      "81bf1e75-9ee7-50e6-b58e-c9db0a746bd4": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-os-02",
+    "subject": "Operating Systems",
+    "topic": "Concurrency and Deadlock",
+    "question": "What are the four Coffman conditions required for a deadlock to occur?",
+    "expected_answer": "The four Coffman conditions are mutual exclusion, hold and wait, no preemption, and circular wait. All four must hold simultaneously for a deadlock.",
+    "key_facts": [
+      "Mutual exclusion prevents sharing",
+      "Hold and wait allows holding while requesting",
+      "No preemption prohibits forcible resource reclamation",
+      "Circular wait forms a closed dependency chain"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "d4f071f9-6f4c-5575-8130-992019980124"
+    ],
+    "graded_relevance": {
+      "d4f071f9-6f4c-5575-8130-992019980124": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "BEGINNER",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-net-01",
+    "subject": "Computer Networks",
+    "topic": "Transport Layer",
+    "question": "What packets are exchanged in a standard TCP three-way handshake to establish a connection?",
+    "expected_answer": "TCP connection establishment begins with the client sending a SYN packet, the server responding with SYN-ACK, and the client confirming with ACK.",
+    "key_facts": [
+      "Client sends SYN with initial sequence number",
+      "Server replies with SYN-ACK acknowledging client ISN",
+      "Client confirms with ACK packet",
+      "Completes reliable full-duplex synchronization"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "b79e7a41-a5d3-5dcd-b5af-9d2becc966c1"
+    ],
+    "graded_relevance": {
+      "b79e7a41-a5d3-5dcd-b5af-9d2becc966c1": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "BEGINNER",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-net-02",
+    "subject": "Computer Networks",
+    "topic": "Congestion Control",
+    "question": "Compare TCP Slow Start and Congestion Avoidance algorithms in cwnd window scaling.",
+    "expected_answer": "Slow Start increases the congestion window exponentially per RTT until ssthresh, after which Congestion Avoidance increases cwnd linearly by 1 MSS per RTT.",
+    "key_facts": [
+      "Slow Start doubles cwnd exponentially each RTT",
+      "Transition occurs when cwnd reaches ssthresh",
+      "Congestion Avoidance uses AIMD linear increase",
+      "Duplicate ACKs trigger fast retransmit"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "0e28bb5c-256f-52c7-8769-71420a957c2b"
+    ],
+    "graded_relevance": {
+      "0e28bb5c-256f-52c7-8769-71420a957c2b": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "COMPARISON",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-se-01",
+    "subject": "Software Engineering",
+    "topic": "Object-Oriented Design",
+    "question": "State the Liskov Substitution Principle and explain its impact on inheritance hierarchy.",
+    "expected_answer": "The Liskov Substitution Principle states that subtypes must be substitutable for their base types without altering correctness or breaking caller expectations.",
+    "key_facts": [
+      "Subtypes must be substitutable for base types",
+      "Preconditions cannot be strengthened in subtypes",
+      "Postconditions cannot be weakened in subtypes",
+      "Prevents runtime failures in polymorphic calls"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "eeffaa71-e64d-56ae-b79a-333a88a46525"
+    ],
+    "graded_relevance": {
+      "eeffaa71-e64d-56ae-b79a-333a88a46525": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-se-02",
+    "subject": "Software Engineering",
+    "topic": "DevOps and CI/CD",
+    "question": "What is the difference between Continuous Integration and Continuous Delivery?",
+    "expected_answer": "Continuous Integration automates code merging, builds, and unit tests, whereas Continuous Delivery automates deployment pipelines so verified builds can release at any time.",
+    "key_facts": [
+      "Continuous Integration focuses on automated merge and testing",
+      "Continuous Delivery ensures deployability to production",
+      "CD includes automated deployment and canary rollbacks"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "f23fef46-28b8-54e1-ba10-c2e954b71e8a"
+    ],
+    "graded_relevance": {
+      "f23fef46-28b8-54e1-ba10-c2e954b71e8a": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "COMPARISON",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-ai-01",
+    "subject": "Artificial Intelligence and Machine Learning",
+    "topic": "Deep Learning",
+    "question": "How does the backpropagation algorithm compute parameter gradients in deep neural networks?",
+    "expected_answer": "Backpropagation applies the calculus chain rule backwards from the loss function, propagating error deltas to compute weight gradients layer by layer.",
+    "key_facts": [
+      "Utilizes calculus chain rule for partial derivatives",
+      "Computes loss gradient with respect to all layer weights",
+      "Propagates errors backwards from output layer",
+      "Gradient descent updates weights proportionally to negative gradients"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "ba8b25a3-daa4-550e-a470-1b3b05716194"
+    ],
+    "graded_relevance": {
+      "ba8b25a3-daa4-550e-a470-1b3b05716194": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-ai-02",
+    "subject": "Artificial Intelligence and Machine Learning",
+    "topic": "Transformer Architecture",
+    "question": "Explain the purpose of query, key, and value matrices in multi-head self-attention.",
+    "expected_answer": "Multi-head self-attention projects input tokens into Query, Key, and Value matrices, computing softmax attention weights from Q and K to weight the Value vectors.",
+    "key_facts": [
+      "Scaled dot-product attention computes Q * K^T divided by sqrt(d_k)",
+      "Softmax normalizes attention weights across token positions",
+      "Value vectors are aggregated by attention weights",
+      "Multiple heads project representations into distinct subspaces"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "a2b9d128-a569-548b-b024-33724fbcb2f3"
+    ],
+    "graded_relevance": {
+      "a2b9d128-a569-548b-b024-33724fbcb2f3": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-cloud-01",
+    "subject": "Cloud and Distributed Systems",
+    "topic": "Distributed Consensus",
+    "question": "Explain why a distributed system can only guarantee two out of Consistency, Availability, and Partition Tolerance.",
+    "expected_answer": "Under Brewer's CAP theorem, when an inevitable network partition occurs, a system must choose between returning errors to guarantee consistency (CP) or serving stale data for availability (AP).",
+    "key_facts": [
+      "CAP theorem proves simultaneous C, A, and P is impossible",
+      "Network partitions are unavoidable in distributed systems",
+      "CP systems refuse updates when consistency cannot be verified",
+      "AP systems prioritize availability over strict linearizability"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "c2f6c919-cfcd-56e4-a0bb-95153a097c2e"
+    ],
+    "graded_relevance": {
+      "c2f6c919-cfcd-56e4-a0bb-95153a097c2e": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-cloud-02",
+    "subject": "Cloud and Distributed Systems",
+    "topic": "Consensus Protocols",
+    "question": "How does the Raft consensus algorithm handle leader election when heartbeats time out?",
+    "expected_answer": "When a follower's election timeout expires, it increments its term, transitions to Candidate, votes for itself, and broadcasts RequestVote RPCs seeking a quorum majority.",
+    "key_facts": [
+      "Followers transition to Candidate upon election timeout",
+      "Candidate increments current term number",
+      "Candidate requests votes from all cluster peers",
+      "Achieving a majority quorum makes the candidate Leader"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "70c7c1a8-d8da-5d02-8bf6-0f683d6c2255"
+    ],
+    "graded_relevance": {
+      "70c7c1a8-d8da-5d02-8bf6-0f683d6c2255": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-arch-01",
+    "subject": "Computer Architecture",
+    "topic": "Instruction Pipelining",
+    "question": "What are data, structural, and control hazards in CPU instruction pipelining?",
+    "expected_answer": "Structural hazards arise from hardware resource conflicts, data hazards occur from instruction operand dependencies (RAW, WAR, WAW), and control hazards stem from branch uncertainties.",
+    "key_facts": [
+      "Structural hazards occur when hardware cannot support concurrent instructions",
+      "Data hazards involve Read-After-Write or Write-After-Write dependencies",
+      "Control hazards result from branch decisions",
+      "Forwarding and stalls mitigate pipeline stalls"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "c43f3475-cfd8-53df-98db-8130a5055848"
+    ],
+    "graded_relevance": {
+      "c43f3475-cfd8-53df-98db-8130a5055848": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-arch-02",
+    "subject": "Computer Architecture",
+    "topic": "Memory Hierarchy",
+    "question": "Explain the four line states in the MESI cache coherence protocol.",
+    "expected_answer": "MESI protocol lines are in Modified (dirty and exclusive), Exclusive (clean and exclusive), Shared (clean in multiple caches), or Invalid (stale data).",
+    "key_facts": [
+      "Modified state indicates dirty data not yet in main memory",
+      "Exclusive state means clean data present only in one cache",
+      "Shared state allows multiple concurrent readers",
+      "Invalid state requires reload via bus snooping"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "6b7f4f4d-6b5e-51e8-8741-ab3bcf4a0406"
+    ],
+    "graded_relevance": {
+      "6b7f4f4d-6b5e-51e8-8741-ab3bcf4a0406": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-comp-01",
+    "subject": "Compiler Design",
+    "topic": "Syntax and Parsing",
+    "question": "What is the fundamental difference between LL(1) and LR(1) parsing strategies?",
+    "expected_answer": "LL(1) is a top-down parser that constructs leftmost derivations and cannot handle left-recursive grammars, whereas LR(1) is bottom-up shift-reduce constructing rightmost derivations.",
+    "key_facts": [
+      "LL(1) builds parse trees top-down with leftmost derivations",
+      "LL(1) cannot handle left-recursive productions",
+      "LR(1) builds parse trees bottom-up with shift-reduce steps",
+      "LR(1) strictly subsumes LL(1) in grammar class power"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "3fcd5c81-9e20-5ad0-99c9-73a99827edf1"
+    ],
+    "graded_relevance": {
+      "3fcd5c81-9e20-5ad0-99c9-73a99827edf1": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "COMPARISON",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-comp-02",
+    "subject": "Compiler Design",
+    "topic": "Optimization and Code Generation",
+    "question": "Why do optimizing compilers insert phi-functions at control flow merge points in SSA form?",
+    "expected_answer": "Phi-functions select which variable version to assign based on the predecessor basic block traversed, maintaining single assignment invariants across branches.",
+    "key_facts": [
+      "SSA requires every variable to be assigned exactly once",
+      "Phi-functions select values dynamically based on incoming control flow edge",
+      "SSA simplifies dead code elimination and constant propagation"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "258ab3b5-b9ad-504e-ab30-49aefc51f8dd"
+    ],
+    "graded_relevance": {
+      "258ab3b5-b9ad-504e-ab30-49aefc51f8dd": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-toc-01",
+    "subject": "Theory of Computation",
+    "topic": "Computability and Automata",
+    "question": "Why is the Halting Problem undecidable for deterministic Turing machines?",
+    "expected_answer": "Alan Turing proved the Halting Problem is undecidable via a proof by contradiction using Cantor's diagonalization, showing no general algorithm can decide halting for all program-input pairs.",
+    "key_facts": [
+      "Turing machines model general algorithmic computation",
+      "Halting Problem asks if an arbitrary program M halts on input w",
+      "Proved undecidable via diagonal contradiction",
+      "Rice's theorem extends undecidability to all semantic properties"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "c110c860-4650-523a-a800-59adccc05de3"
+    ],
+    "graded_relevance": {
+      "c110c860-4650-523a-a800-59adccc05de3": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-toc-02",
+    "subject": "Theory of Computation",
+    "topic": "Computational Complexity",
+    "question": "Define complexity class NP and what makes a problem NP-complete.",
+    "expected_answer": "Class NP contains decision problems whose solutions are verifiable in polynomial time, and a problem is NP-complete if it is in NP and every problem in NP reduces to it in polynomial time.",
+    "key_facts": [
+      "NP problems have candidate solutions verifiable in polynomial time",
+      "NP-complete problems are the hardest problems in NP",
+      "Cook-Levin theorem proved Boolean SAT is NP-complete",
+      "Whether P = NP remains unresolved"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "71206a8b-1575-52a8-b158-5760c99bdd4f"
+    ],
+    "graded_relevance": {
+      "71206a8b-1575-52a8-b158-5760c99bdd4f": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-sec-01",
+    "subject": "Cybersecurity",
+    "topic": "Cryptography",
+    "question": "How does RSA public-key encryption differ from Elliptic Curve Cryptography (ECC)?",
+    "expected_answer": "RSA bases security on the hardness of integer factorization of large semiprimes, whereas ECC relies on the elliptic curve discrete logarithm problem, providing equivalent security with smaller keys.",
+    "key_facts": [
+      "RSA security derives from prime integer factorization hardness",
+      "ECC security relies on the discrete logarithm problem over elliptic curves",
+      "ECC achieves comparable security with much smaller key lengths (256-bit vs 3072-bit)"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "7cb210a7-2476-5288-a607-79265933ecd1"
+    ],
+    "graded_relevance": {
+      "7cb210a7-2476-5288-a607-79265933ecd1": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "COMPARISON",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-sec-02",
+    "subject": "Cybersecurity",
+    "topic": "Application Security",
+    "question": "Why do parameterized queries prevent SQL injection attacks?",
+    "expected_answer": "Parameterized queries separate query logic from data by compiling the SQL template before binding parameters, preventing untrusted input from modifying the query structure.",
+    "key_facts": [
+      "SQL injection occurs when untrusted input is concatenated into query strings",
+      "Parameterized queries compile the query template before parameter binding",
+      "Data parameters are treated strictly as literal values, not executable syntax"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "a2ff422b-8655-5f59-b1c4-294ae75a4365"
+    ],
+    "graded_relevance": {
+      "a2ff422b-8655-5f59-b1c4-294ae75a4365": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "BEGINNER",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-web-01",
+    "subject": "Web Development",
+    "topic": "Client-Side Architecture",
+    "question": "In the JavaScript event loop, when are microtasks executed relative to macrotasks?",
+    "expected_answer": "Microtasks (e.g. Promise callbacks) execute immediately when the current call stack empties, draining the entire microtask queue before browser rendering and before the next macrotask.",
+    "key_facts": [
+      "JavaScript runs on a single-threaded event loop",
+      "Synchronous code runs on the call stack",
+      "Microtask queue is fully drained before the next macrotask is dequeued",
+      "Browser rendering occurs after microtask queue draining"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "59e13821-0499-5d7c-9913-ae5979673a61"
+    ],
+    "graded_relevance": {
+      "59e13821-0499-5d7c-9913-ae5979673a61": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-dev-web-02",
+    "subject": "Web Development",
+    "topic": "Web Security Models",
+    "question": "What is the Same-Origin Policy and under what conditions is a CORS preflight OPTIONS request required?",
+    "expected_answer": "The Same-Origin Policy restricts scripts in one origin from accessing resources in another origin, and CORS preflight OPTIONS requests are required for non-simple cross-origin HTTP requests.",
+    "key_facts": [
+      "Same-Origin Policy enforces origin boundary (protocol, domain, port)",
+      "CORS allows servers to relax SOP via response headers",
+      "Non-simple cross-origin requests trigger automated preflight HTTP OPTIONS"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "096bea33-7d2e-595e-98be-76b1f391677d"
+    ],
+    "graded_relevance": {
+      "096bea33-7d2e-595e-98be-76b1f391677d": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "DEV",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  }
+]

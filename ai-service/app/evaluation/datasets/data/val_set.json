@@ -1,0 +1,495 @@
+[
+  {
+    "case_id": "eval-val-pf-01",
+    "subject": "Programming Fundamentals",
+    "topic": "Scope and Lifetime",
+    "question": "How does lexical scoping resolve identifiers in nested closures?",
+    "expected_answer": "Lexical scoping resolves variable references based on the static source code nesting, allowing inner closures to retain references to variables in enclosing scopes after outer functions return.",
+    "key_facts": [
+      "Lexical scoping resolves variable references at compile time based on static code structure",
+      "Inner closures retain access to outer function scope variables even after outer return"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "5df00b13-1634-5741-80ad-2c5c23210ecd"
+    ],
+    "graded_relevance": {
+      "5df00b13-1634-5741-80ad-2c5c23210ecd": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-val-dsa-01",
+    "subject": "Data Structures and Algorithms",
+    "topic": "Graph Algorithms",
+    "question": "Under what edge weight condition does Dijkstra's shortest path algorithm guarantee correctness?",
+    "expected_answer": "Dijkstra's algorithm guarantees correctness strictly on graphs with non-negative edge weights; negative edge weights require Bellman-Ford.",
+    "key_facts": [
+      "Dijkstra requires strictly non-negative edge weights",
+      "Greedy relaxation assumes visited node distances never decrease",
+      "Negative weights violate greedy subproblem optimality"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "7f0f92f9-c6b8-515d-95d0-f9442f7ebce5"
+    ],
+    "graded_relevance": {
+      "7f0f92f9-c6b8-515d-95d0-f9442f7ebce5": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "BEGINNER",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-val-db-01",
+    "subject": "Database Management Systems",
+    "topic": "Indexing and Storage",
+    "question": "Why are B+ trees preferred over standard binary search trees for disk-based database indexes?",
+    "expected_answer": "B+ trees provide very high node fan-out which minimizes tree depth and disk I/O, and linked leaf nodes allow sequential range scans without re-traversing upper nodes.",
+    "key_facts": [
+      "B+ tree internal nodes store only routing keys maximizing fan-out",
+      "Shallow tree depth minimizes disk I/O block reads",
+      "Doubly-linked leaf nodes enable sequential range queries"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "20c2d0a0-1ff8-54ff-b16c-096370fdb2fe"
+    ],
+    "graded_relevance": {
+      "20c2d0a0-1ff8-54ff-b16c-096370fdb2fe": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "COMPARISON",
+    "answerability": "ANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-val-os-01",
+    "subject": "Operating Systems",
+    "topic": "CPU Scheduling",
+    "question": "How does the Linux Completely Fair Scheduler (CFS) use virtual runtime (vruntime) for thread scheduling?",
+    "expected_answer": "CFS tracks elapsed execution time normalized by priority in vruntime stored in a red-black tree, always picking the task with the lowest vruntime to run next.",
+    "key_facts": [
+      "CFS tracks task execution in virtual runtime (vruntime)",
+      "vruntime is normalized by process nice value",
+      "CFS uses red-black trees to select the task with minimum vruntime"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "78eadac5-78f4-51ff-9128-643775a76040"
+    ],
+    "graded_relevance": {
+      "78eadac5-78f4-51ff-9128-643775a76040": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-val-net-01",
+    "subject": "Computer Networks",
+    "topic": "Application Layer",
+    "question": "Describe the recursive resolution process through Root, TLD, and Authoritative DNS servers.",
+    "expected_answer": "A recursive DNS resolver queries Root servers for TLD referrals, queries the TLD server for authoritative name server locations, and finally queries the authoritative server for the IP address.",
+    "key_facts": [
+      "Recursive resolver queries Root DNS servers first",
+      "Root servers return Top-Level Domain (TLD) referrals",
+      "TLD servers return authoritative name server addresses",
+      "Responses are cached locally according to TTL"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "8662726c-f319-5518-8b11-422383a8a7b7"
+    ],
+    "graded_relevance": {
+      "8662726c-f319-5518-8b11-422383a8a7b7": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "BEGINNER",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-val-se-01",
+    "subject": "Software Engineering",
+    "topic": "Object-Oriented Design",
+    "question": "Explain the Dependency Inversion Principle and how interfaces decouple modules.",
+    "expected_answer": "The Dependency Inversion Principle dictates that high-level modules should not depend on low-level modules, but rather both should depend on abstractions such as interfaces.",
+    "key_facts": [
+      "High-level modules should depend on abstractions not concrete classes",
+      "Low-level modules implement abstractions",
+      "Prevents tight coupling across architectural boundaries"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "eeffaa71-e64d-56ae-b79a-333a88a46525"
+    ],
+    "graded_relevance": {
+      "eeffaa71-e64d-56ae-b79a-333a88a46525": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-val-ai-01",
+    "subject": "Artificial Intelligence and Machine Learning",
+    "topic": "Transformer Architecture",
+    "question": "Why does scaled dot-product attention divide by the square root of the key dimension d_k?",
+    "expected_answer": "Dividing by sqrt(d_k) prevents large dot products from pushing the softmax function into regions with extremely small gradients, stabilizing training.",
+    "key_facts": [
+      "Dot products grow large in high dimensional spaces",
+      "Large magnitude inputs saturate softmax functions",
+      "Division by sqrt(d_k) preserves stable gradient flow during backpropagation"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "a2b9d128-a569-548b-b024-33724fbcb2f3"
+    ],
+    "graded_relevance": {
+      "a2b9d128-a569-548b-b024-33724fbcb2f3": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-val-cloud-01",
+    "subject": "Cloud and Distributed Systems",
+    "topic": "Consensus Protocols",
+    "question": "How does Raft ensure committed log entries are never overwritten by new leaders?",
+    "expected_answer": "Raft ensures Leader Completeness by requiring candidate nodes to have logs at least as up-to-date as any voter's log in order to receive votes.",
+    "key_facts": [
+      "Raft candidates must possess all committed entries to win election",
+      "Voters deny votes to candidates with less up-to-date logs",
+      "Committed entries are replicated on a quorum majority"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "70c7c1a8-d8da-5d02-8bf6-0f683d6c2255"
+    ],
+    "graded_relevance": {
+      "70c7c1a8-d8da-5d02-8bf6-0f683d6c2255": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-val-arch-01",
+    "subject": "Computer Architecture",
+    "topic": "Memory Hierarchy",
+    "question": "What happens to a Modified cache line in MESI when another core reads that memory block?",
+    "expected_answer": "When a remote core reads a Modified line, the holding core intercepts the request via snooping, writes the line back to main memory, and transitions its line to Shared.",
+    "key_facts": [
+      "Holding core snoops the bus read broadcast",
+      "Dirty cache line is written back to main memory",
+      "Holding core transitions state from Modified to Shared",
+      "Requesting core receives data and enters Shared state"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "6b7f4f4d-6b5e-51e8-8741-ab3bcf4a0406"
+    ],
+    "graded_relevance": {
+      "6b7f4f4d-6b5e-51e8-8741-ab3bcf4a0406": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-val-comp-01",
+    "subject": "Compiler Design",
+    "topic": "Optimization and Code Generation",
+    "question": "How does Static Single Assignment (SSA) form facilitate dead code elimination?",
+    "expected_answer": "Because every variable in SSA has exactly one definition site, use-def chains are trivial, allowing the compiler to identify and delete assignments whose variables have no uses.",
+    "key_facts": [
+      "SSA establishes explicit 1:1 definition-use relationships",
+      "Trivial use-def chains eliminate complex dataflow tracking",
+      "Definitions with zero uses can be safely eliminated as dead code"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "258ab3b5-b9ad-504e-ab30-49aefc51f8dd"
+    ],
+    "graded_relevance": {
+      "258ab3b5-b9ad-504e-ab30-49aefc51f8dd": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-val-toc-01",
+    "subject": "Theory of Computation",
+    "topic": "Computational Complexity",
+    "question": "What is the significance of the Cook-Levin theorem for NP-completeness proofs?",
+    "expected_answer": "The Cook-Levin theorem proved that Boolean Satisfiability (SAT) is NP-complete, providing the foundational base problem from which all other NP-completeness reductions are built.",
+    "key_facts": [
+      "Cook-Levin theorem proved Boolean SAT is NP-complete",
+      "Established that all NP problems polynomial-time reduce to SAT",
+      "Serves as the root for subsequent polynomial-time reductions"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "71206a8b-1575-52a8-b158-5760c99bdd4f"
+    ],
+    "graded_relevance": {
+      "71206a8b-1575-52a8-b158-5760c99bdd4f": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-val-sec-01",
+    "subject": "Cybersecurity",
+    "topic": "Cryptography",
+    "question": "Why does 256-bit ECC provide comparable security to 3072-bit RSA with lower computational overhead?",
+    "expected_answer": "ECC relies on the discrete logarithm problem over elliptic curves where no sub-exponential algorithm exists, unlike RSA where sub-exponential General Number Field Sieve factoring reduces effective security.",
+    "key_facts": [
+      "RSA suffers from sub-exponential General Number Field Sieve factoring",
+      "Elliptic curve discrete logs require fully exponential Pollard-rho steps",
+      "Allows 256-bit ECC keys to match 3072-bit RSA security strength"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "7cb210a7-2476-5288-a607-79265933ecd1"
+    ],
+    "graded_relevance": {
+      "7cb210a7-2476-5288-a607-79265933ecd1": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "COMPARISON",
+    "answerability": "ANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-val-web-01",
+    "subject": "Web Development",
+    "topic": "Web Security Models",
+    "question": "What three components define an origin in browser security under the Same-Origin Policy?",
+    "expected_answer": "An origin is defined strictly as the tuple of URI protocol/scheme, hostname/domain, and port number.",
+    "key_facts": [
+      "Origin is defined as protocol, domain, and port tuple",
+      "All three components must match exactly for same-origin requests",
+      "Cross-origin requests are blocked unless allowed by CORS headers"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "096bea33-7d2e-595e-98be-76b1f391677d"
+    ],
+    "graded_relevance": {
+      "096bea33-7d2e-595e-98be-76b1f391677d": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "BEGINNER",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-val-multi-01",
+    "subject": "Programming Fundamentals",
+    "topic": "Cross-Domain Memory",
+    "question": "How does the stack allocation mechanism in programming languages interact with virtual memory pages in the operating system?",
+    "expected_answer": "Function call frames are allocated in the process call stack, which is mapped into contiguous virtual memory pages that the MMU translates into physical frames via the page table.",
+    "key_facts": [
+      "Call stack frames reside inside process virtual memory address space",
+      "MMU translates virtual stack pages into physical frames using page tables",
+      "Stack growth exceeding allocated virtual pages triggers stack overflow or page faults"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "99dfe11b-a600-575f-8a6a-49bbf234549a",
+      "81bf1e75-9ee7-50e6-b58e-c9db0a746bd4"
+    ],
+    "graded_relevance": {
+      "99dfe11b-a600-575f-8a6a-49bbf234549a": 3,
+      "81bf1e75-9ee7-50e6-b58e-c9db0a746bd4": 2
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "MULTI_HOP",
+    "answerability": "ANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": true,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-val-unans-01",
+    "subject": "Programming Fundamentals",
+    "topic": "Advanced Recursion",
+    "question": "What is the tail call optimization mechanism in mutual recursion under LLVM compiler flags?",
+    "expected_answer": "The provided documents do not contain information regarding tail call optimization mechanisms or LLVM compiler optimization flags.",
+    "key_facts": [
+      "Tail call optimization details are absent from the corpus",
+      "LLVM optimization flags are not covered"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "INSUFFICIENT_EVIDENCE",
+    "answerability": "UNANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": "Tail call optimization and LLVM compiler flags are not covered in the curriculum corpus."
+  },
+  {
+    "case_id": "eval-val-unans-02",
+    "subject": "Data Structures and Algorithms",
+    "topic": "Advanced Heaps",
+    "question": "How does a Fibonacci Heap achieve O(1) amortized decrease-key complexity using potential functions?",
+    "expected_answer": "The provided documents do not contain information regarding Fibonacci heaps or amortized potential function proofs.",
+    "key_facts": [
+      "Fibonacci heap decrease-key operations are absent",
+      "Potential function amortized analysis is not in the corpus"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "INSUFFICIENT_EVIDENCE",
+    "answerability": "UNANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": "Fibonacci heaps and amortized potential functions are absent from the curriculum corpus."
+  },
+  {
+    "case_id": "eval-val-unans-03",
+    "subject": "Database Management Systems",
+    "topic": "Storage Engines",
+    "question": "How does PostgreSQL vacuuming clean up dead row versions in transaction ID wraparound?",
+    "expected_answer": "The provided documents do not contain information regarding PostgreSQL vacuuming mechanics or transaction ID wraparound.",
+    "key_facts": [
+      "Dead tuple cleanup mechanics are absent",
+      "Transaction ID wraparound is not in the corpus"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "INSUFFICIENT_EVIDENCE",
+    "answerability": "UNANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": "Postgres dead tuple cleanup and transaction ID wraparound are absent."
+  },
+  {
+    "case_id": "eval-val-unans-04",
+    "subject": "Computer Networks",
+    "topic": "Transport Layer",
+    "question": "Explain the QUIC protocol 0-RTT connection resumption mechanism over UDP.",
+    "expected_answer": "The provided documents do not contain information regarding the QUIC transport protocol or 0-RTT handshakes.",
+    "key_facts": [
+      "QUIC protocol details are absent",
+      "0-RTT connection resumption is not in the corpus"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "INSUFFICIENT_EVIDENCE",
+    "answerability": "UNANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": "QUIC protocol and 0-RTT handshakes are not in the corpus."
+  },
+  {
+    "case_id": "eval-val-unans-05",
+    "subject": "Artificial Intelligence and Machine Learning",
+    "topic": "GPU Acceleration",
+    "question": "What is FlashAttention-2 tiling in GPU SRAM kernel fusion for long context transformers?",
+    "expected_answer": "The provided documents do not contain information regarding FlashAttention kernel tiling or GPU SRAM caching.",
+    "key_facts": [
+      "FlashAttention GPU kernel tiling is absent",
+      "SRAM hardware memory hierarchy is not covered"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "INSUFFICIENT_EVIDENCE",
+    "answerability": "UNANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": "FlashAttention GPU memory hierarchy kernel tiling is not in the corpus."
+  },
+  {
+    "case_id": "eval-val-unans-06",
+    "subject": "Cloud and Distributed Systems",
+    "topic": "Distributed Clocks",
+    "question": "How does Google Spanner use TrueTime atomic clocks to serialize distributed read-write transactions?",
+    "expected_answer": "The provided documents do not contain information regarding Google Spanner or TrueTime atomic clock hardware synchronization.",
+    "key_facts": [
+      "Google Spanner is not in the corpus",
+      "TrueTime GPS/atomic clock uncertainty bounds are absent"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "INSUFFICIENT_EVIDENCE",
+    "answerability": "UNANSWERABLE",
+    "split": "VAL",
+    "is_multi_source": false,
+    "abstention_rationale": "Google Spanner and TrueTime GPS/atomic clock uncertainty bounds are not in the corpus."
+  }
+]

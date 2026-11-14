@@ -1,0 +1,820 @@
+[
+  {
+    "case_id": "eval-test-ans-01",
+    "subject": "Programming Fundamentals",
+    "topic": "Recursion and Memory",
+    "question": "What specific information is stored within an activation record on the call stack during a function call?",
+    "expected_answer": "An activation record (stack frame) on the call stack stores local variables, function parameters, and the return address to resume after completion.",
+    "key_facts": [
+      "Stack frames store local variables",
+      "Stack frames store function arguments/parameters",
+      "Stack frames store the return execution address"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "99dfe11b-a600-575f-8a6a-49bbf234549a"
+    ],
+    "graded_relevance": {
+      "99dfe11b-a600-575f-8a6a-49bbf234549a": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "BEGINNER",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-02",
+    "subject": "Data Structures and Algorithms",
+    "topic": "Graph Algorithms",
+    "question": "Why does Dijkstra's algorithm require non-negative edge weights to guarantee finding the shortest path?",
+    "expected_answer": "Dijkstra's greedy choice assumes that once a node is marked visited with minimum tentative distance, no subsequent path can reduce that distance, an invariant broken by negative edge weights.",
+    "key_facts": [
+      "Dijkstra greedily marks nodes visited assuming shortest path is finalized",
+      "Negative edge weights can decrease path cost after a node is visited",
+      "Violates greedy choice property"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "7f0f92f9-c6b8-515d-95d0-f9442f7ebce5"
+    ],
+    "graded_relevance": {
+      "7f0f92f9-c6b8-515d-95d0-f9442f7ebce5": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-03",
+    "subject": "Database Management Systems",
+    "topic": "Indexing and Storage",
+    "question": "Why do B+ trees link all leaf nodes in a doubly-linked list?",
+    "expected_answer": "Linking leaf nodes in a doubly-linked list enables efficient sequential range scans across records without traversing upper tree levels.",
+    "key_facts": [
+      "All leaf nodes are connected in a contiguous doubly-linked list",
+      "Enables sequential range scans across table rows",
+      "Avoids re-traversing upper tree nodes"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "20c2d0a0-1ff8-54ff-b16c-096370fdb2fe"
+    ],
+    "graded_relevance": {
+      "20c2d0a0-1ff8-54ff-b16c-096370fdb2fe": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "BEGINNER",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-04",
+    "subject": "Operating Systems",
+    "topic": "Concurrency and Deadlock",
+    "question": "Which Coffman condition is eliminated by enforcing a strict global resource ordering?",
+    "expected_answer": "Enforcing a strict global resource ordering eliminates the Circular Wait condition, as processes must request resources in strictly ascending numerical order.",
+    "key_facts": [
+      "Global resource ordering eliminates Circular Wait",
+      "Processes must request resources in strictly ascending numerical order",
+      "Prevents closed dependency cycles"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "d4f071f9-6f4c-5575-8130-992019980124"
+    ],
+    "graded_relevance": {
+      "d4f071f9-6f4c-5575-8130-992019980124": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-05",
+    "subject": "Computer Networks",
+    "topic": "Application Layer",
+    "question": "What default transport port and protocol does DNS use for queries under 512 bytes?",
+    "expected_answer": "DNS predominantly uses UDP port 53 for standard queries under 512 bytes to minimize latency overhead.",
+    "key_facts": [
+      "DNS default transport protocol is UDP",
+      "DNS uses port 53",
+      "Falls back to TCP for responses exceeding 512 bytes"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "8662726c-f319-5518-8b11-422383a8a7b7"
+    ],
+    "graded_relevance": {
+      "8662726c-f319-5518-8b11-422383a8a7b7": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "BEGINNER",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-06",
+    "subject": "Cybersecurity",
+    "topic": "Application Security",
+    "question": "What role does the database query compiler play in making prepared statements immune to SQL injection?",
+    "expected_answer": "Prepared statements cause the database engine to parse and compile the SQL query template before binding untrusted parameter values as literal data.",
+    "key_facts": [
+      "Database engine compiles query template before parameter binding",
+      "Untrusted inputs are treated strictly as data literals",
+      "Prevents attacker inputs from altering SQL query grammar"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "a2ff422b-8655-5f59-b1c4-294ae75a4365"
+    ],
+    "graded_relevance": {
+      "a2ff422b-8655-5f59-b1c4-294ae75a4365": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "DIRECT_FACTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-07",
+    "subject": "Software Engineering",
+    "topic": "Object-Oriented Design",
+    "question": "Explain the Open/Closed Principle and describe how polymorphism enables extension without modification.",
+    "expected_answer": "The Open/Closed Principle states software entities should be open for extension but closed for modification, achieved through polymorphic interfaces where new behaviors are added via new subclasses.",
+    "key_facts": [
+      "Entities should be open for extension but closed for modification",
+      "Abstractions and interfaces allow adding new behaviors without altering existing code",
+      "Polymorphism decouples callers from concrete implementations"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "eeffaa71-e64d-56ae-b79a-333a88a46525"
+    ],
+    "graded_relevance": {
+      "eeffaa71-e64d-56ae-b79a-333a88a46525": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-08",
+    "subject": "Artificial Intelligence and Machine Learning",
+    "topic": "Deep Learning",
+    "question": "How does the chain rule enable backward propagation of errors from loss to input layer?",
+    "expected_answer": "The calculus chain rule allows computing composite derivatives by multiplying intermediate partial derivatives backwards through successive network layers.",
+    "key_facts": [
+      "Chain rule multiplies partial derivatives across composite functions",
+      "Error deltas propagate backwards from output loss layer",
+      "Enables computing weight gradients at hidden and input layers"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "ba8b25a3-daa4-550e-a470-1b3b05716194"
+    ],
+    "graded_relevance": {
+      "ba8b25a3-daa4-550e-a470-1b3b05716194": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-09",
+    "subject": "Cloud and Distributed Systems",
+    "topic": "Consensus Protocols",
+    "question": "How do randomized election timeouts in Raft prevent split votes among candidate nodes?",
+    "expected_answer": "Raft randomizes follower election timeouts across an interval (e.g. 150-300ms) so one follower times out first, becoming a Candidate and winning a majority before competitors.",
+    "key_facts": [
+      "Followers use randomized election timeouts",
+      "Prevents simultaneous candidate transitions",
+      "Avoids split votes by enabling one candidate to win majority quorum quickly"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "70c7c1a8-d8da-5d02-8bf6-0f683d6c2255"
+    ],
+    "graded_relevance": {
+      "70c7c1a8-d8da-5d02-8bf6-0f683d6c2255": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-10",
+    "subject": "Computer Architecture",
+    "topic": "Instruction Pipelining",
+    "question": "How does data forwarding (bypassing) resolve Read-After-Write (RAW) data hazards in pipelined processors?",
+    "expected_answer": "Data forwarding routes calculated results directly from the Execution (EX) or Memory (MEM) pipeline stages to the Decode/Execute stage of subsequent instructions without waiting for register write-back.",
+    "key_facts": [
+      "Data forwarding routes results directly from EX/MEM stages",
+      "Eliminates stalls by supplying operands before register write-back",
+      "Resolves Read-After-Write dependencies"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "c43f3475-cfd8-53df-98db-8130a5055848"
+    ],
+    "graded_relevance": {
+      "c43f3475-cfd8-53df-98db-8130a5055848": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-11",
+    "subject": "Compiler Design",
+    "topic": "Syntax and Parsing",
+    "question": "How does an LR(1) parser use a lookahead token to resolve shift-reduce conflicts?",
+    "expected_answer": "An LR(1) parser inspects 1 lookahead token to determine whether to shift the token onto the parse stack or reduce a completed production rule based on canonical LR items.",
+    "key_facts": [
+      "LR(1) parsers use bottom-up shift-reduce derivations",
+      "1 lookahead token disambiguates between shifting and reducing",
+      "Constructs rightmost derivations in reverse"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "3fcd5c81-9e20-5ad0-99c9-73a99827edf1"
+    ],
+    "graded_relevance": {
+      "3fcd5c81-9e20-5ad0-99c9-73a99827edf1": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-12",
+    "subject": "Theory of Computation",
+    "topic": "Computability and Automata",
+    "question": "What does Rice's Theorem imply about undecidability of program behavior from Turing machines?",
+    "expected_answer": "Rice's Theorem proves that any non-trivial semantic property of partial recursive functions computed by Turing machines is undecidable.",
+    "key_facts": [
+      "Rice's theorem applies to all non-trivial semantic properties",
+      "Proves behavioral analysis of arbitrary Turing machines is undecidable",
+      "Derived from the undecidability of the Halting Problem"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "c110c860-4650-523a-a800-59adccc05de3"
+    ],
+    "graded_relevance": {
+      "c110c860-4650-523a-a800-59adccc05de3": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "CONCEPTUAL",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-13",
+    "subject": "Computer Networks",
+    "topic": "Network and Web Integration",
+    "question": "How does the TCP 3-way handshake relate to latency overhead in CORS preflight OPTIONS requests?",
+    "expected_answer": "Non-simple cross-origin web requests require an automated preflight HTTP OPTIONS round trip over TCP, incurring connection handshake round trips (SYN, SYN-ACK, ACK) and CORS authorization overhead before data transfer.",
+    "key_facts": [
+      "TCP connection establishment requires SYN, SYN-ACK, ACK round trips",
+      "CORS requires automated HTTP OPTIONS preflight for non-simple requests",
+      "Compound latency overhead impacts cross-origin web applications"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "b79e7a41-a5d3-5dcd-b5af-9d2becc966c1",
+      "096bea33-7d2e-595e-98be-76b1f391677d"
+    ],
+    "graded_relevance": {
+      "b79e7a41-a5d3-5dcd-b5af-9d2becc966c1": 3,
+      "096bea33-7d2e-595e-98be-76b1f391677d": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "MULTI_HOP",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": true,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-14",
+    "subject": "Database Management Systems",
+    "topic": "DB Indexing and OS Virtual Memory",
+    "question": "Compare how B+ tree page sizes are aligned with operating system virtual memory page frames to minimize I/O overhead.",
+    "expected_answer": "Database B+ tree nodes are sized to match or multiply OS virtual memory page sizes (e.g. 4KB or 8KB), ensuring that fetching an index node corresponds exactly to virtual page translations without wasted I/O.",
+    "key_facts": [
+      "B+ tree nodes are sized to match disk block and virtual memory page boundaries",
+      "Virtual memory MMU maps pages to frames using page tables and TLB",
+      "Alignment minimizes disk block transfers and page fault latency"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "20c2d0a0-1ff8-54ff-b16c-096370fdb2fe",
+      "81bf1e75-9ee7-50e6-b58e-c9db0a746bd4"
+    ],
+    "graded_relevance": {
+      "20c2d0a0-1ff8-54ff-b16c-096370fdb2fe": 3,
+      "81bf1e75-9ee7-50e6-b58e-c9db0a746bd4": 2
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "MULTI_HOP",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": true,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-15",
+    "subject": "Computer Architecture",
+    "topic": "Hardware Coherence and Concurrency",
+    "question": "How does hardware cache line invalidation in the MESI protocol impact thread synchronization and deadlock detection in multicore systems?",
+    "expected_answer": "When multiple cores synchronize shared resources (e.g. mutexes), writes cause MESI cache lines to invalidate in peer caches, while improper resource lock ordering across threads can satisfy the Coffman circular wait condition leading to deadlock.",
+    "key_facts": [
+      "MESI bus snooping invalidates shared cache lines upon write",
+      "Thread synchronization variables trigger cache line invalidations",
+      "Lack of global resource lock ordering satisfies Coffman circular wait leading to deadlock"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "6b7f4f4d-6b5e-51e8-8741-ab3bcf4a0406",
+      "d4f071f9-6f4c-5575-8130-992019980124"
+    ],
+    "graded_relevance": {
+      "6b7f4f4d-6b5e-51e8-8741-ab3bcf4a0406": 3,
+      "d4f071f9-6f4c-5575-8130-992019980124": 2
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "MULTI_HOP",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": true,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-16",
+    "subject": "Compiler Design",
+    "topic": "Syntax and Parsing",
+    "question": "Compare LL(1) top-down recursive descent with LR(1) bottom-up shift-reduce parsing in language grammar coverage.",
+    "expected_answer": "LL(1) top-down parsers require non-left-recursive grammars and predict productions from 1 token lookahead, whereas LR(1) bottom-up parsers handle left-recursive grammars and represent a strictly larger grammar class.",
+    "key_facts": [
+      "LL(1) is top-down and cannot handle left-recursive grammars",
+      "LR(1) is bottom-up shift-reduce and handles left recursion",
+      "LR(1) grammar class strictly contains LL(1)"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "3fcd5c81-9e20-5ad0-99c9-73a99827edf1"
+    ],
+    "graded_relevance": {
+      "3fcd5c81-9e20-5ad0-99c9-73a99827edf1": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "COMPARISON",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-17",
+    "subject": "Cybersecurity",
+    "topic": "Cryptography",
+    "question": "Compare the mathematical trapdoor functions underlying RSA factorization versus Elliptic Curve discrete logarithms.",
+    "expected_answer": "RSA relies on the difficulty of integer factorization of semiprimes (n = p * q), while ECC relies on the discrete logarithm problem over points on an elliptic curve, yielding equivalent security with smaller keys.",
+    "key_facts": [
+      "RSA trapdoor is based on semiprime integer factorization",
+      "ECC trapdoor is based on elliptic curve discrete logarithm problem",
+      "ECC provides equivalent security with smaller keys"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "7cb210a7-2476-5288-a607-79265933ecd1"
+    ],
+    "graded_relevance": {
+      "7cb210a7-2476-5288-a607-79265933ecd1": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "COMPARISON",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-18",
+    "subject": "Web Development",
+    "topic": "Client-Side Architecture",
+    "question": "Compare microtask and macrotask scheduling priority in the browser event loop.",
+    "expected_answer": "Microtasks (Promise reactions) have higher execution priority and are completely drained whenever the call stack empties, before the browser renders and before the next macrotask (timers, I/O) executes.",
+    "key_facts": [
+      "Microtasks include Promise callbacks and MutationObserver",
+      "Macrotasks include setTimeout, setInterval, and I/O callbacks",
+      "Microtask queue is fully drained before the next macrotask is dequeued"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "59e13821-0499-5d7c-9913-ae5979673a61"
+    ],
+    "graded_relevance": {
+      "59e13821-0499-5d7c-9913-ae5979673a61": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "COMPARISON",
+    "answerability": "ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": null
+  },
+  {
+    "case_id": "eval-test-ans-19",
+    "subject": "Cloud and Distributed Systems",
+    "topic": "Consensus Trade-offs",
+    "question": "Explain the CAP theorem partition tolerance trade-off and describe the Paxos multi-decree protocol phases.",
+    "expected_answer": "The documents explain the CAP theorem trade-off between consistency and availability under partition [S1], but do not contain information regarding multi-decree Paxos protocol phases.",
+    "key_facts": [
+      "CAP theorem forces choice between CP and AP under partition",
+      "Multi-decree Paxos details are absent from the provided documents"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "c2f6c919-cfcd-56e4-a0bb-95153a097c2e"
+    ],
+    "graded_relevance": {
+      "c2f6c919-cfcd-56e4-a0bb-95153a097c2e": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "INSUFFICIENT_EVIDENCE",
+    "answerability": "PARTIALLY_ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": "CAP theorem is supported, but Paxos multi-decree protocol phases are absent from the corpus."
+  },
+  {
+    "case_id": "eval-test-ans-20",
+    "subject": "Data Structures and Algorithms",
+    "topic": "Tree Structures",
+    "question": "Explain BST worst-case search complexity and describe how splay tree zig-zig rotations maintain amortized bounds.",
+    "expected_answer": "The documents explain that unbalanced BST search degrades to O(N) worst-case time [S1], but do not contain information on splay tree zig-zig rotations.",
+    "key_facts": [
+      "Unbalanced BST search degrades to O(N) when inserting sorted elements",
+      "Splay tree zig-zig rotation mechanics are absent from the corpus"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [
+      "517f5fca-8204-5a4e-8e65-7a23d23da4cf"
+    ],
+    "graded_relevance": {
+      "517f5fca-8204-5a4e-8e65-7a23d23da4cf": 3
+    },
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "INSUFFICIENT_EVIDENCE",
+    "answerability": "PARTIALLY_ANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": "BST properties are supported, but splay tree zig-zig rotations are absent from the corpus."
+  },
+  {
+    "case_id": "eval-test-unans-01",
+    "subject": "Artificial Intelligence and Machine Learning",
+    "topic": "Quantum Computing",
+    "question": "What is the decoherence rate of superconducting transmon qubits under cryogenic dilution?",
+    "expected_answer": "The provided documents do not contain information regarding superconducting transmon qubits or quantum decoherence rates.",
+    "key_facts": [
+      "Superconducting qubits are absent from the corpus",
+      "Cryogenic dilution decoherence rates are not covered"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "INSUFFICIENT_EVIDENCE",
+    "answerability": "UNANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": "Quantum computing and qubit decoherence are absent from the curriculum corpus."
+  },
+  {
+    "case_id": "eval-test-unans-02",
+    "subject": "Database Management Systems",
+    "topic": "Distributed Databases",
+    "question": "How does Apache Cassandra use hinted handoffs and read repair during partition healing?",
+    "expected_answer": "The provided documents do not contain information regarding Apache Cassandra hinted handoffs or read repair mechanisms.",
+    "key_facts": [
+      "Apache Cassandra is absent from the corpus",
+      "Hinted handoffs and read repair are not covered"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "INSUFFICIENT_EVIDENCE",
+    "answerability": "UNANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": "Cassandra-specific hinted handoffs and read repair protocols are absent."
+  },
+  {
+    "case_id": "eval-test-unans-03",
+    "subject": "Operating Systems",
+    "topic": "Kernel Security",
+    "question": "Explain the eBPF verifier bytecode static safety checks for kernel ring buffers.",
+    "expected_answer": "The provided documents do not contain information regarding Linux eBPF bytecode verification or kernel ring buffers.",
+    "key_facts": [
+      "Linux eBPF architecture is absent from the corpus",
+      "Bytecode static safety verification is not covered"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "INSUFFICIENT_EVIDENCE",
+    "answerability": "UNANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": "Linux eBPF bytecode verification is absent from the curriculum corpus."
+  },
+  {
+    "case_id": "eval-test-unans-04",
+    "subject": "Computer Networks",
+    "topic": "Virtualization",
+    "question": "How does BGP EVPN use VXLAN encapsulation for data center network virtualization?",
+    "expected_answer": "The provided documents do not contain information regarding BGP EVPN or VXLAN network encapsulation.",
+    "key_facts": [
+      "BGP EVPN protocol is absent from the corpus",
+      "VXLAN network virtualization is not covered"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "INSUFFICIENT_EVIDENCE",
+    "answerability": "UNANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": "BGP EVPN and VXLAN network overlay protocols are absent from the curriculum corpus."
+  },
+  {
+    "case_id": "eval-test-unans-05",
+    "subject": "Artificial Intelligence and Machine Learning",
+    "topic": "Optimization",
+    "question": "Explain the mathematical derivation of AdamW decoupled weight decay versus L2 regularization.",
+    "expected_answer": "The provided documents do not contain information regarding AdamW decoupled weight decay or its mathematical derivation.",
+    "key_facts": [
+      "AdamW optimizer equations are absent from the corpus",
+      "Decoupled weight decay derivation is not covered"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "INSUFFICIENT_EVIDENCE",
+    "answerability": "UNANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": "AdamW decoupled weight decay optimizer equations are absent from the corpus."
+  },
+  {
+    "case_id": "eval-test-unans-06",
+    "subject": "Compiler Design",
+    "topic": "Virtual Machines",
+    "question": "How does the GraalVM polyglot engine compile JavaScript to native machine code via Truffle AST specialization?",
+    "expected_answer": "The provided documents do not contain information regarding GraalVM, Truffle AST specialization, or polyglot runtime compilation.",
+    "key_facts": [
+      "GraalVM engine architecture is absent from the corpus",
+      "Truffle AST specialization is not covered"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "INSUFFICIENT_EVIDENCE",
+    "answerability": "UNANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": "GraalVM Truffle AST specialization is absent from the curriculum corpus."
+  },
+  {
+    "case_id": "eval-test-unans-07",
+    "subject": "Cybersecurity",
+    "topic": "Zero-Knowledge Proofs",
+    "question": "Explain zero-knowledge succinct non-interactive arguments of knowledge (zk-SNARKs) quadratic arithmetic programs.",
+    "expected_answer": "The provided documents do not contain information regarding zk-SNARKs or quadratic arithmetic program transformations.",
+    "key_facts": [
+      "zk-SNARKs cryptographic protocols are absent from the corpus",
+      "Quadratic arithmetic programs are not covered"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "INSUFFICIENT_EVIDENCE",
+    "answerability": "UNANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": "Zero-knowledge proofs and QAP transformations are absent from the curriculum corpus."
+  },
+  {
+    "case_id": "eval-test-unans-08",
+    "subject": "Web Development",
+    "topic": "WebAssembly",
+    "question": "How does WebAssembly linear memory interact with JavaScript SharedArrayBuffer under the Atomics memory model?",
+    "expected_answer": "The provided documents do not contain information regarding WebAssembly linear memory, SharedArrayBuffer, or JavaScript Atomics.",
+    "key_facts": [
+      "WebAssembly linear memory is absent from the corpus",
+      "SharedArrayBuffer Atomics concurrency is not covered"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "INSUFFICIENT_EVIDENCE",
+    "answerability": "UNANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": "WebAssembly linear memory and SharedArrayBuffer Atomics concurrency are absent from the corpus."
+  },
+  {
+    "case_id": "eval-test-distract-01",
+    "subject": "Data Structures and Algorithms",
+    "topic": "Graph Algorithms",
+    "question": "How does Dijkstra's algorithm handle negative weight cycles by updating the predecessor array?",
+    "expected_answer": "The provided documents state that Dijkstra's algorithm strictly requires non-negative edge weights and fails on negative weights; handling negative weight cycles requires Bellman-Ford, which is not in the corpus.",
+    "key_facts": [
+      "Dijkstra strictly requires non-negative edge weights",
+      "Dijkstra cannot handle negative weight cycles"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "DISTRACTOR",
+    "answerability": "UNANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": "Dijkstra is covered, but explicitly assumes non-negative weights; negative weight cycle handling requires Bellman-Ford, which is absent."
+  },
+  {
+    "case_id": "eval-test-distract-02",
+    "subject": "Computer Architecture",
+    "topic": "Instruction Pipelining",
+    "question": "Explain how branch prediction in instruction pipelining uses the Spectre speculative execution gadget to leak kernel memory.",
+    "expected_answer": "The provided documents explain pipelining hazards and branch prediction, but do not contain information on Spectre speculative execution exploits.",
+    "key_facts": [
+      "Instruction pipelining hazards are covered",
+      "Spectre speculative execution gadget exploit is absent"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "DISTRACTOR",
+    "answerability": "UNANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": "Pipeline hazards and control hazards are covered, but Spectre vulnerability speculative gadgets are absent."
+  },
+  {
+    "case_id": "eval-test-distract-03",
+    "subject": "Operating Systems",
+    "topic": "CPU Scheduling",
+    "question": "How does the Linux CFS scheduler calculate real-time priority task preemptions under the SCHED_FIFO scheduling class?",
+    "expected_answer": "The provided documents explain CFS virtual runtime for standard tasks, but do not contain information on the SCHED_FIFO real-time scheduling class.",
+    "key_facts": [
+      "Linux CFS virtual runtime is covered",
+      "Real-time SCHED_FIFO scheduling is absent"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "DISTRACTOR",
+    "answerability": "UNANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": "CFS virtual runtime is covered, but real-time SCHED_FIFO priority scheduling is absent."
+  },
+  {
+    "case_id": "eval-test-distract-04",
+    "subject": "Computer Networks",
+    "topic": "Congestion Control",
+    "question": "Explain how TCP Slow Start calculates the initial congestion window using Cubic polynomial curve coefficients.",
+    "expected_answer": "The provided documents explain standard TCP Slow Start and AIMD, but do not contain information regarding TCP Cubic polynomial coefficients.",
+    "key_facts": [
+      "TCP Slow Start and AIMD are covered",
+      "TCP Cubic polynomial coefficients are absent"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "ADVANCED",
+    "category": "DISTRACTOR",
+    "answerability": "UNANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": "Standard TCP Slow Start and AIMD are covered, but TCP Cubic polynomial formulas are absent."
+  },
+  {
+    "case_id": "eval-test-conflict-01",
+    "subject": "Cloud and Distributed Systems",
+    "topic": "Distributed Guarantees",
+    "question": "Can a network partition in a distributed system guarantee both strict linearizable consistency and 100% availability?",
+    "expected_answer": "Based on Brewer's CAP theorem in the provided documents, a distributed system under network partition mathematically cannot guarantee both consistency and availability simultaneously.",
+    "key_facts": [
+      "CAP theorem proves simultaneous C and A under partition is impossible",
+      "Systems must trade off consistency for availability during partitions"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONFLICTING_EVIDENCE",
+    "answerability": "UNANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": "The CAP theorem in the corpus explicitly proves this combination is mathematically impossible; a grounded system must state this invariant."
+  },
+  {
+    "case_id": "eval-test-conflict-02",
+    "subject": "Theory of Computation",
+    "topic": "Computational Complexity",
+    "question": "Has an efficient polynomial-time algorithm O(n^2) been proven for solving all NP-complete problems?",
+    "expected_answer": "The provided documents state that whether P = NP remains the foremost unsolved problem in theoretical computer science, and no polynomial-time algorithm is known for NP-complete problems.",
+    "key_facts": [
+      "P vs NP remains an unsolved problem",
+      "No polynomial-time algorithm is known for NP-complete problems"
+    ],
+    "relevant_doc_id": null,
+    "relevant_chunk_ids": [],
+    "graded_relevance": {},
+    "expected_evidence_excerpts": [],
+    "difficulty": "INTERMEDIATE",
+    "category": "CONFLICTING_EVIDENCE",
+    "answerability": "UNANSWERABLE",
+    "split": "TEST",
+    "is_multi_source": false,
+    "abstention_rationale": "The corpus states P vs NP remains open and Cook-Levin proves SAT is NP-complete; claiming an existing polynomial solution contradicts known theoretical computer science."
+  }
+]

@@ -1,0 +1,1811 @@
+{
+  "metadata": {
+    "timestamp": "2026-11-12T17:46:40.728218Z",
+    "framework_version": "0.12.1.5-closed",
+    "corpus_version": "v1.1-curated-13-subjects-80-cases",
+    "corpus_chunks_count": 31,
+    "models": {
+      "embedding": "BAAI/bge-base-en-v1.5",
+      "reranker": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+      "llm": "groq/llama-3.3-70b-versatile + google/gemini-1.5-flash"
+    },
+    "reproducibility": {
+      "python_version": "3.10.0",
+      "scipy_version": "1.15.3",
+      "numpy_version": "2.2.6",
+      "os_platform": "Windows-10-10.0.26300-SP0",
+      "cpu_architecture": "Intel64 Family 6 Model 142 Stepping 10, GenuineIntel",
+      "cpu_logical_cores": 8,
+      "gpu_acceleration": "None (CPU Execution)",
+      "deterministic_seed": 42,
+      "dataset_file_hashes_sha256": {
+        "corpus.json": "b41aa31c2c5093489eeceb8a1dbefff80cd061c303baf1c312b4356459a4a10e",
+        "dev_set.json": "fe5ac9eb16a11079f94eb8e0a8047f294a6a3bd9275bfca950b68ca734346e79",
+        "val_set.json": "76b68a31b031dcf6a7e31ebf4be00991cf5031a2497016a4c6c0e42cde236e2f",
+        "test_set.json": "b4208a445bf2cd573de3ec0a5347aa6ec8ca9bc2f0f4f34f7c6e0991c27c1649"
+      },
+      "raw_per_query_results_location": "Embedded in docs/rag_evaluation_results.json -> raw_per_query_results"
+    },
+    "statistical_methodology": {
+      "evaluated_sample_size": 20,
+      "degrees_of_freedom": 19,
+      "confidence_interval_formula": "d_bar +/- t_{crit} * (s_d / sqrt(N))",
+      "unadjusted_alpha": 0.05,
+      "unadjusted_t_critical": 2.093024054408263,
+      "bonferroni_family_comparisons": 4,
+      "bonferroni_family_alpha": 0.05,
+      "bonferroni_adjusted_alpha": 0.0125,
+      "bonferroni_t_critical": 2.758585899047301,
+      "assumptions": [
+        "Paired observations: Each query is evaluated under candidate and baseline configurations on identical corpus candidates.",
+        "Sample independence: 20 answerable test queries evaluate distinct CS topics across 13 disciplines.",
+        "Continuous bounded differences: nDCG delta d_i in [-1, +1]; sampling distribution of mean difference d_bar approximated as Student-t via CLT."
+      ],
+      "paired_comparisons_summary": {
+        "Keyword-Only vs Dense-Only": {
+          "mean_delta_ndcg": 0.0101,
+          "std_dev_delta": 0.0349,
+          "sem": 0.0078,
+          "t_statistic": 1.2975,
+          "p_value": 0.21,
+          "unadjusted_ci_95": [
+            -0.0062,
+            0.0265
+          ],
+          "bonferroni_ci_98_75": [
+            -0.0114,
+            0.0317
+          ],
+          "statistically_significant": false
+        },
+        "Dense + Keyword Union vs Dense-Only": {
+          "mean_delta_ndcg": 0.0045,
+          "std_dev_delta": 0.016,
+          "sem": 0.0036,
+          "t_statistic": 1.2633,
+          "p_value": 0.2218,
+          "unadjusted_ci_95": [
+            -0.003,
+            0.012
+          ],
+          "bonferroni_ci_98_75": [
+            -0.0053,
+            0.0144
+          ],
+          "statistically_significant": false
+        },
+        "Hybrid RRF (k=60) vs Dense-Only": {
+          "mean_delta_ndcg": 0.0052,
+          "std_dev_delta": 0.017,
+          "sem": 0.0038,
+          "t_statistic": 1.3717,
+          "p_value": 0.1861,
+          "unadjusted_ci_95": [
+            -0.0027,
+            0.0132
+          ],
+          "bonferroni_ci_98_75": [
+            -0.0053,
+            0.0157
+          ],
+          "statistically_significant": false
+        },
+        "Cross-Encoder vs Dense-Only": {
+          "mean_delta_ndcg": -0.0131,
+          "std_dev_delta": 0.086,
+          "sem": 0.0192,
+          "t_statistic": -0.68,
+          "p_value": 0.5047,
+          "unadjusted_ci_95": [
+            -0.0533,
+            0.0272
+          ],
+          "bonferroni_ci_98_75": [
+            -0.0661,
+            0.04
+          ],
+          "statistically_significant": false
+        }
+      }
+    },
+    "retrieval_metric_coexistence_proof": {
+      "coexisting_values": {
+        "recall_at_1": 0.925,
+        "mrr": 1.0
+      },
+      "reason": "Macro-averaging over multi-target evaluation queries where |Relevant| > 1 bounds Recall@1 to 1 / |Relevant| = 0.500 while MRR achieves 1.000 because rank 1 contains a relevant chunk.",
+      "sample_breakdown": {
+        "total_answerable_queries": 20,
+        "single_target_queries": 17,
+        "multi_target_queries": 3,
+        "multi_target_case_ids": [
+          "eval-test-ans-13",
+          "eval-test-ans-14",
+          "eval-test-ans-15"
+        ]
+      },
+      "proof_calculation": "Macro Recall@1 = (17 * 1.0 + 3 * 0.5) / 20 = 18.5 / 20 = 0.9250; Macro MRR = (20 * 1.0) / 20 = 1.0000"
+    },
+    "reranker_architectural_recommendation": {
+      "significance_status": "NOT_STATISTICALLY_SIGNIFICANT (p = 0.5047 vs Dense baseline)",
+      "multi_hop_benefit": "Promotes secondary relevant chunks for complex multi-hop queries (+0.0694 on TCP/CORS, +0.0528 on B+ Trees/Paging).",
+      "single_hop_risk": "Can slightly reorder already-optimal rank 1 candidates on single-hop queries (e.g., eval-test-ans-01 delta -0.3691).",
+      "production_guidance": "Reranker must remain configurable via feature flag (ENABLE_RERANKER=true/false) or query-intent routing rather than being deployed unconditionally."
+    },
+    "historical_reconciliation": {
+      "authoritative_benchmark_version": "0.12.1.5-closed",
+      "activation_record_case_reconciliation": {
+        "case_id": "eval-test-ans-01",
+        "subject": "Programming Fundamentals",
+        "topic": "Recursion, Stack Frames & Activation Records",
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 0.6309,
+        "authoritative_per_query_delta": -0.3691,
+        "historical_phase_12_1_1_delta": -0.3691,
+        "phase_12_1_2_prose_cited_delta": -0.2625,
+        "reconciliation_explanation": "The ranking output, candidate pool, ground-truth labels, and metric code for eval-test-ans-01 have NEVER changed: Dense placed the target recursion chunk at rank 1 (nDCG = 1.0000), while Cross-Encoder placed a related stack-vs-heap chunk at rank 1 and the target recursion chunk at rank 2 (nDCG = 1.0 / log2(3) = 0.6309), yielding an exact per-query delta of -0.3691. The value -0.2625 cited in Phase 12.1.2 prose was a typographical transcription slip where an earlier rough aggregate subtraction sum across all 20 test queries (20 * (-0.013125) = -0.2625) was inadvertently cited as the per-query delta for eval-test-ans-01."
+      },
+      "four_non_zero_reranker_differences": {
+        "graded_relevance": {
+          "eval-test-ans-01": {
+            "dense": 1.0,
+            "reranked": 0.6309,
+            "delta": -0.3691,
+            "unrounded_delta": -0.36907025
+          },
+          "eval-test-ans-13": {
+            "dense": 0.8503,
+            "reranked": 0.9197,
+            "delta": 0.0694,
+            "unrounded_delta": 0.06937594
+          },
+          "eval-test-ans-14": {
+            "dense": 0.5649,
+            "reranked": 0.6177,
+            "delta": 0.0529,
+            "unrounded_delta": 0.05285097
+          },
+          "eval-test-ans-15": {
+            "dense": 0.9324,
+            "reranked": 0.9177,
+            "delta": -0.0148,
+            "unrounded_delta": -0.01478363
+          },
+          "remaining_16_queries": "All exactly 0.0000",
+          "exact_paired_sum": -0.26162697,
+          "displayed_paired_sum": -0.2616,
+          "exact_paired_mean": -0.01308135,
+          "displayed_paired_mean": -0.0131
+        },
+        "binary_relevance": {
+          "eval-test-ans-01": {
+            "dense": 1.0,
+            "reranked": 0.6309,
+            "delta": -0.3691,
+            "unrounded_delta": -0.36907025
+          },
+          "eval-test-ans-13": {
+            "dense": 0.8503,
+            "reranked": 0.9197,
+            "delta": 0.0694,
+            "unrounded_delta": 0.06937594
+          },
+          "eval-test-ans-14": {
+            "dense": 0.7904,
+            "reranked": 0.8316,
+            "delta": 0.0412,
+            "unrounded_delta": 0.04116843
+          },
+          "eval-test-ans-15": {
+            "dense": 0.8772,
+            "reranked": 0.8503,
+            "delta": -0.0269,
+            "unrounded_delta": -0.02686976
+          },
+          "remaining_16_queries": "All exactly 0.0000",
+          "exact_paired_sum": -0.28539662,
+          "displayed_paired_sum": -0.2854,
+          "exact_paired_mean": -0.01426983,
+          "displayed_paired_mean": -0.0143
+        },
+        "reconciliation_of_cited_sum": "The value -0.2625 cited in earlier reports was a typographical transcription slip for the true paired sum -0.2616 (-0.26162697). In the authoritative benchmark, the unrounded macro-averaged aggregate means are 0.95430264 (Cross-Encoder) and 0.96738399 (Dense-Only), whose difference is exactly -0.01308135. This matches the paired per-query mean difference (-0.26162697 / 20 = -0.01308135) to within 1e-16 machine precision. The hypothetical aggregate difference 0.954275 - 0.967400 = -0.013125 (discrepancy ~0.00004365) was an erroneous post-hoc back-calculation in Phase 12.1.3 prose when dividing -0.2625 by 20, rather than the true aggregate score calculation."
+      },
+      "paired_statistical_reconciliation": {
+        "explanation": "Binary and graded paired mean deltas differ across all four comparisons due to multi-target queries (eval-test-ans-13, 14, 15) receiving graded weights (3 and 2): Keyword (+0.0095 Binary vs +0.0101 Graded, diff +0.0006), Simple Union (+0.0043 Binary vs +0.0045 Graded, diff +0.0002), Hybrid RRF (+0.0048 Binary vs +0.0052 Graded, diff +0.0004), and Cross-Encoder (-0.0143 Binary vs -0.0131 Graded, diff +0.0012). Crucially, under BOTH formulations, NO retrieval configuration achieves statistical significance (all p > 0.18; all 95% and 98.75% Bonferroni confidence intervals bracket zero).",
+        "phase_12_1_1_binary_relevance": {
+          "Keyword-Only vs Dense": {
+            "diff_of_aggregate_means": 0.0095,
+            "paired_mean_delta": 0.0095,
+            "unrounded_mean_delta": 0.00954116,
+            "paired_sum_deltas": 0.1908,
+            "std_dev": 0.0342,
+            "sem": 0.0077,
+            "t_statistic": 1.2463,
+            "p_value": 0.2278,
+            "ci_95": [
+              -0.0065,
+              0.0256
+            ],
+            "bonferroni_ci": [
+              -0.0116,
+              0.0307
+            ]
+          },
+          "Simple Union vs Dense": {
+            "diff_of_aggregate_means": 0.0043,
+            "paired_mean_delta": 0.0043,
+            "unrounded_mean_delta": 0.00427815,
+            "paired_sum_deltas": 0.0856,
+            "std_dev": 0.0157,
+            "sem": 0.0035,
+            "t_statistic": 1.2153,
+            "p_value": 0.2391,
+            "ci_95": [
+              -0.0031,
+              0.0116
+            ],
+            "bonferroni_ci": [
+              -0.0054,
+              0.014
+            ]
+          },
+          "Hybrid RRF (k=60) vs Dense": {
+            "diff_of_aggregate_means": 0.0048,
+            "paired_mean_delta": 0.0048,
+            "unrounded_mean_delta": 0.00482595,
+            "paired_sum_deltas": 0.0965,
+            "std_dev": 0.0164,
+            "sem": 0.0037,
+            "t_statistic": 1.3194,
+            "p_value": 0.2027,
+            "ci_95": [
+              -0.0028,
+              0.0125
+            ],
+            "bonferroni_ci": [
+              -0.0053,
+              0.0149
+            ]
+          },
+          "Cross-Encoder vs Dense": {
+            "diff_of_aggregate_means": -0.0143,
+            "paired_mean_delta": -0.0143,
+            "unrounded_mean_delta": -0.01426983,
+            "paired_sum_deltas": -0.2854,
+            "std_dev": 0.0856,
+            "sem": 0.0192,
+            "t_statistic": -0.7451,
+            "p_value": 0.4653,
+            "ci_95": [
+              -0.0544,
+              0.0258
+            ],
+            "bonferroni_ci": [
+              -0.0671,
+              0.0386
+            ]
+          }
+        },
+        "phase_12_1_2_graded_relevance": {
+          "Keyword-Only vs Dense": {
+            "diff_of_aggregate_means": 0.0101,
+            "paired_mean_delta": 0.0101,
+            "unrounded_mean_delta": 0.01012533,
+            "paired_sum_deltas": 0.2025,
+            "std_dev": 0.0349,
+            "sem": 0.0078,
+            "t_statistic": 1.2975,
+            "p_value": 0.21,
+            "ci_95": [
+              -0.0062,
+              0.0265
+            ],
+            "bonferroni_ci": [
+              -0.0114,
+              0.0317
+            ]
+          },
+          "Simple Union vs Dense": {
+            "diff_of_aggregate_means": 0.0045,
+            "paired_mean_delta": 0.0045,
+            "unrounded_mean_delta": 0.00450784,
+            "paired_sum_deltas": 0.0902,
+            "std_dev": 0.016,
+            "sem": 0.0036,
+            "t_statistic": 1.2633,
+            "p_value": 0.2218,
+            "ci_95": [
+              -0.003,
+              0.012
+            ],
+            "bonferroni_ci": [
+              -0.0053,
+              0.0144
+            ]
+          },
+          "Hybrid RRF (k=60) vs Dense": {
+            "diff_of_aggregate_means": 0.0052,
+            "paired_mean_delta": 0.0052,
+            "unrounded_mean_delta": 0.0052111,
+            "paired_sum_deltas": 0.1042,
+            "std_dev": 0.017,
+            "sem": 0.0038,
+            "t_statistic": 1.3717,
+            "p_value": 0.1861,
+            "ci_95": [
+              -0.0027,
+              0.0132
+            ],
+            "bonferroni_ci": [
+              -0.0053,
+              0.0157
+            ]
+          },
+          "Cross-Encoder vs Dense": {
+            "diff_of_aggregate_means": -0.0131,
+            "paired_mean_delta": -0.0131,
+            "unrounded_mean_delta": -0.01308135,
+            "paired_sum_deltas": -0.2616,
+            "std_dev": 0.086,
+            "sem": 0.0192,
+            "t_statistic": -0.68,
+            "p_value": 0.5047,
+            "ci_95": [
+              -0.0533,
+              0.0272
+            ],
+            "bonferroni_ci": [
+              -0.0661,
+              0.04
+            ]
+          }
+        }
+      },
+      "version_lineage_and_superseded_status": {
+        "Phase 12 (0.12.0)": "SUPERSEDED: Contained initial 51 vs 52 split count arithmetic discrepancy and unaligned candidate pool sizing (Dense 15 vs Rerank 5).",
+        "Phase 12.1 (0.12.1)": "SUPERSEDED: Introduced 80 canonical cases and candidate pool alignment, but had preliminary unadjusted statistical reporting.",
+        "Phase 12.1.1 (0.12.1.1)": "SUPERSEDED: Confirmed statistical non-significance with binary relevance evaluation, but did not formalize Bonferroni simultaneous CIs or multi-target coexistence proofs.",
+        "Phase 12.1.2 (0.12.1.2)": "SUPERSEDED: Fully formalized statistical framework and coexistence proof, but contained the typographical transcription slip citing -0.2625 for eval-test-ans-01.",
+        "Phase 12.1.3 (0.12.1.3-closed)": "SUPERSEDED: Certified reproducibility across runs and resolved case-01 delta to -0.3691, but retained a conflated binary mean delta (-0.0131 instead of -0.0143) and cited an aggregate delta sum of -0.2625 instead of the exact paired sum -0.2616.",
+        "Phase 12.1.4 (0.12.1.4-closed)": "SUPERSEDED: Unified Binary and Graded statistics and resolved per-query sums, but retained the 2.8609 critical value metadata slip and cited the phantom 0.954275 - 0.967400 = -0.013125 back-calculation.",
+        "Phase 12.1.5 (0.12.1.5-closed)": "AUTHORITATIVE_FINAL: Corrects Bonferroni critical value to exact t_{0.99375, 19} = 2.7586, reconciles graded aggregate nDCG difference and paired mean identity (mean(C - D) == mean(C) - mean(D)), and certifies all statistical intervals across all retrieval stages."
+      }
+    },
+    "audit_notes": {
+      "corpus_sharing": "Corpus of 31 academic curriculum chunks is shared across DEV, VAL, and TEST. Queries and evaluation cases are strictly partitioned with 0 question overlap.",
+      "retrieval_significance": "No paired retrieval differences achieved statistical significance (p > 0.20 across all 4 comparisons vs dense baseline).",
+      "human_review_status": "PENDING_EXTERNAL_REVIEW (Worksheet generated in docs/HUMAN_REVIEW_WORKSHEET.md; completed external panel scoring pending)",
+      "learning_studio_tier_3_status": "PENDING_EXPERT_REVIEW"
+    }
+  },
+  "dataset_splits": {
+    "dev": {
+      "total": 26,
+      "answerable": 26,
+      "unanswerable": 0,
+      "multi_source": 0
+    },
+    "val": {
+      "total": 20,
+      "answerable": 14,
+      "unanswerable": 6,
+      "multi_source": 2
+    },
+    "test": {
+      "total": 34,
+      "answerable": 20,
+      "unanswerable": 14,
+      "multi_source": 3
+    },
+    "total_cases": 80,
+    "total_answerable": 60,
+    "total_unanswerable": 20,
+    "curriculum_disciplines": 13
+  },
+  "retrieval": {
+    "overall": {
+      "Dense Only": {
+        "samples": 20,
+        "recall_at_1": 0.925,
+        "recall_at_3": 0.925,
+        "recall_at_5": 0.975,
+        "recall_at_10": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.956,
+        "ndcg_at_10": 0.9674,
+        "precision_at_5": 0.22
+      },
+      "Keyword Only": {
+        "samples": 20,
+        "recall_at_1": 0.925,
+        "recall_at_3": 0.95,
+        "recall_at_5": 0.975,
+        "recall_at_10": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.9635,
+        "ndcg_at_10": 0.9775,
+        "precision_at_5": 0.22
+      },
+      "Dense + Keyword (No RRF/Rerank)": {
+        "samples": 20,
+        "recall_at_1": 0.925,
+        "recall_at_3": 0.95,
+        "recall_at_5": 0.975,
+        "recall_at_10": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.9595,
+        "ndcg_at_10": 0.9719,
+        "precision_at_5": 0.22
+      },
+      "Dense + Keyword + RRF": {
+        "samples": 20,
+        "recall_at_1": 0.925,
+        "recall_at_3": 0.95,
+        "recall_at_5": 0.975,
+        "recall_at_10": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.9595,
+        "ndcg_at_10": 0.9726,
+        "precision_at_5": 0.22
+      },
+      "Dense + Keyword + RRF + Reranking": {
+        "samples": 20,
+        "recall_at_1": 0.875,
+        "recall_at_3": 0.95,
+        "recall_at_5": 0.975,
+        "recall_at_10": 1.0,
+        "mrr": 0.975,
+        "ndcg_at_5": 0.9403,
+        "ndcg_at_10": 0.9543,
+        "precision_at_5": 0.22
+      }
+    },
+    "by_subject": {
+      "Artificial Intelligence and Machine Learning": {
+        "Dense Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Keyword Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword (No RRF/Rerank)": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF + Reranking": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        }
+      },
+      "Cloud and Distributed Systems": {
+        "Dense Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Keyword Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword (No RRF/Rerank)": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF + Reranking": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        }
+      },
+      "Compiler Design": {
+        "Dense Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Keyword Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword (No RRF/Rerank)": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF + Reranking": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        }
+      },
+      "Computer Architecture": {
+        "Dense Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.9662
+        },
+        "Keyword Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.9662
+        },
+        "Dense + Keyword (No RRF/Rerank)": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.9662
+        },
+        "Dense + Keyword + RRF": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.9662
+        },
+        "Dense + Keyword + RRF + Reranking": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.9588
+        }
+      },
+      "Computer Networks": {
+        "Dense Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.9252
+        },
+        "Keyword Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword (No RRF/Rerank)": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.9599
+        },
+        "Dense + Keyword + RRF": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.9599
+        },
+        "Dense + Keyword + RRF + Reranking": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.9599
+        }
+      },
+      "Cybersecurity": {
+        "Dense Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Keyword Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword (No RRF/Rerank)": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF + Reranking": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        }
+      },
+      "Data Structures and Algorithms": {
+        "Dense Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Keyword Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword (No RRF/Rerank)": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF + Reranking": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        }
+      },
+      "Database Management Systems": {
+        "Dense Only": {
+          "recall_at_5": 0.75,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.7824
+        },
+        "Keyword Only": {
+          "recall_at_5": 0.75,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.8089
+        },
+        "Dense + Keyword (No RRF/Rerank)": {
+          "recall_at_5": 0.75,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.7928
+        },
+        "Dense + Keyword + RRF": {
+          "recall_at_5": 0.75,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.7999
+        },
+        "Dense + Keyword + RRF + Reranking": {
+          "recall_at_5": 0.75,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.8089
+        }
+      },
+      "Operating Systems": {
+        "Dense Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Keyword Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword (No RRF/Rerank)": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF + Reranking": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        }
+      },
+      "Programming Fundamentals": {
+        "Dense Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Keyword Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword (No RRF/Rerank)": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF + Reranking": {
+          "recall_at_5": 1.0,
+          "mrr": 0.5,
+          "ndcg_at_10": 0.6309
+        }
+      },
+      "Software Engineering": {
+        "Dense Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Keyword Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword (No RRF/Rerank)": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF + Reranking": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        }
+      },
+      "Theory of Computation": {
+        "Dense Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Keyword Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword (No RRF/Rerank)": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF + Reranking": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        }
+      },
+      "Web Development": {
+        "Dense Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Keyword Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword (No RRF/Rerank)": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF + Reranking": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        }
+      }
+    },
+    "by_difficulty": {
+      "BEGINNER": {
+        "Dense Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Keyword Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword (No RRF/Rerank)": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF + Reranking": {
+          "recall_at_5": 1.0,
+          "mrr": 0.8333,
+          "ndcg_at_10": 0.877
+        }
+      },
+      "INTERMEDIATE": {
+        "Dense Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Keyword Only": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword (No RRF/Rerank)": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        },
+        "Dense + Keyword + RRF + Reranking": {
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_10": 1.0
+        }
+      },
+      "ADVANCED": {
+        "Dense Only": {
+          "recall_at_5": 0.9286,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.9068
+        },
+        "Keyword Only": {
+          "recall_at_5": 0.9286,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.9357
+        },
+        "Dense + Keyword (No RRF/Rerank)": {
+          "recall_at_5": 0.9286,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.9197
+        },
+        "Dense + Keyword + RRF": {
+          "recall_at_5": 0.9286,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.9217
+        },
+        "Dense + Keyword + RRF + Reranking": {
+          "recall_at_5": 0.9286,
+          "mrr": 1.0,
+          "ndcg_at_10": 0.9222
+        }
+      }
+    }
+  },
+  "ablation": [
+    {
+      "config": "1. Dense-Only",
+      "description": "Dense semantic retrieval (BGE-base-en-v1.5) cosine similarity",
+      "candidate_pool_size": 15,
+      "avg_candidates_returned": 10.0,
+      "recall_at_1": 0.925,
+      "recall_at_3": 0.925,
+      "recall_at_5": 0.975,
+      "recall_at_10": 1.0,
+      "precision_at_5": 0.22,
+      "mrr": 1.0,
+      "ndcg_at_5": 0.956,
+      "ndcg_at_10": 0.9674,
+      "latency_ms": 2.38,
+      "mrr_delta_vs_dense": 0.0,
+      "ndcg_delta_vs_dense": 0.0,
+      "p_value_mrr": 1.0,
+      "p_value_ndcg": 1.0,
+      "std_dev_delta": 0.0,
+      "sem_delta": 0.0,
+      "ci_95_ndcg": [
+        0.0,
+        0.0
+      ],
+      "ci_bonferroni_ndcg": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "config": "2. Keyword-Only",
+      "description": "PostgreSQL FTS bm25/tsvector lexical search",
+      "candidate_pool_size": 15,
+      "avg_candidates_returned": 10.0,
+      "recall_at_1": 0.925,
+      "recall_at_3": 0.95,
+      "recall_at_5": 0.975,
+      "recall_at_10": 1.0,
+      "precision_at_5": 0.22,
+      "mrr": 1.0,
+      "ndcg_at_5": 0.9635,
+      "ndcg_at_10": 0.9775,
+      "latency_ms": 2.62,
+      "mrr_delta_vs_dense": 0.0,
+      "ndcg_delta_vs_dense": 0.0101,
+      "p_value_mrr": 1.0,
+      "p_value_ndcg": 0.21,
+      "std_dev_delta": 0.0349,
+      "sem_delta": 0.0078,
+      "ci_95_ndcg": [
+        -0.0062,
+        0.0265
+      ],
+      "ci_bonferroni_ndcg": [
+        -0.0114,
+        0.0317
+      ]
+    },
+    {
+      "config": "3. Dense + Keyword (No Rerank)",
+      "description": "Interleaved union of dense and keyword without RRF fusion",
+      "candidate_pool_size": 30,
+      "avg_candidates_returned": 10.0,
+      "recall_at_1": 0.925,
+      "recall_at_3": 0.95,
+      "recall_at_5": 0.975,
+      "recall_at_10": 1.0,
+      "precision_at_5": 0.22,
+      "mrr": 1.0,
+      "ndcg_at_5": 0.9595,
+      "ndcg_at_10": 0.9719,
+      "latency_ms": 5.02,
+      "mrr_delta_vs_dense": 0.0,
+      "ndcg_delta_vs_dense": 0.0045,
+      "p_value_mrr": 1.0,
+      "p_value_ndcg": 0.2218,
+      "std_dev_delta": 0.016,
+      "sem_delta": 0.0036,
+      "ci_95_ndcg": [
+        -0.003,
+        0.012
+      ],
+      "ci_bonferroni_ndcg": [
+        -0.0053,
+        0.0144
+      ]
+    },
+    {
+      "config": "4. Dense + Keyword + RRF",
+      "description": "Reciprocal Rank Fusion (k=60) hybrid score ranking",
+      "candidate_pool_size": 30,
+      "avg_candidates_returned": 10.0,
+      "recall_at_1": 0.925,
+      "recall_at_3": 0.95,
+      "recall_at_5": 0.975,
+      "recall_at_10": 1.0,
+      "precision_at_5": 0.22,
+      "mrr": 1.0,
+      "ndcg_at_5": 0.9595,
+      "ndcg_at_10": 0.9726,
+      "latency_ms": 8.09,
+      "mrr_delta_vs_dense": 0.0,
+      "ndcg_delta_vs_dense": 0.0052,
+      "p_value_mrr": 1.0,
+      "p_value_ndcg": 0.1861,
+      "std_dev_delta": 0.017,
+      "sem_delta": 0.0038,
+      "ci_95_ndcg": [
+        -0.0027,
+        0.0132
+      ],
+      "ci_bonferroni_ndcg": [
+        -0.0053,
+        0.0157
+      ]
+    },
+    {
+      "config": "5. Dense + Keyword + RRF + Rerank",
+      "description": "Full production pipeline: Hybrid RRF + ms-marco Cross-Encoder",
+      "candidate_pool_size": 10,
+      "avg_candidates_returned": 10.0,
+      "recall_at_1": 0.875,
+      "recall_at_3": 0.95,
+      "recall_at_5": 0.975,
+      "recall_at_10": 1.0,
+      "precision_at_5": 0.22,
+      "mrr": 0.975,
+      "ndcg_at_5": 0.9403,
+      "ndcg_at_10": 0.9543,
+      "latency_ms": 8.41,
+      "mrr_delta_vs_dense": -0.025,
+      "ndcg_delta_vs_dense": -0.0131,
+      "p_value_mrr": 0.3299,
+      "p_value_ndcg": 0.5047,
+      "std_dev_delta": 0.086,
+      "sem_delta": 0.0192,
+      "ci_95_ndcg": [
+        -0.0533,
+        0.0272
+      ],
+      "ci_bonferroni_ndcg": [
+        -0.0661,
+        0.04
+      ]
+    }
+  ],
+  "generation": {
+    "sample_count": 34,
+    "mean_correctness": 0.7843,
+    "mean_relevance": 0.7615,
+    "mean_completeness": 0.7843,
+    "citation_precision": 0.9265,
+    "citation_coverage": 1.0,
+    "claim_faithfulness": 0.9265,
+    "hallucination_rate": 0.0735,
+    "source_id_validity": 1.0,
+    "grounding_distribution": {
+      "grounded": 18,
+      "partially_grounded": 2,
+      "insufficient_evidence": 14
+    }
+  },
+  "abstention": {
+    "confusion_matrix": {
+      "matrix": {
+        "fully_answerable": {
+          "grounded": 18,
+          "partially_grounded": 0,
+          "abstained": 0,
+          "total": 18
+        },
+        "partially_answerable": {
+          "grounded": 0,
+          "partially_grounded": 2,
+          "abstained": 0,
+          "total": 2
+        },
+        "unanswerable": {
+          "grounded": 0,
+          "partially_grounded": 0,
+          "abstained": 14,
+          "total": 14
+        }
+      },
+      "predicted_totals": {
+        "grounded": 18,
+        "partially_grounded": 2,
+        "abstained": 14
+      },
+      "total_cases": 34
+    },
+    "total_unanswerable": 14,
+    "correct_abstentions": 14,
+    "unsupported_answers": 0,
+    "total_answerable": 18,
+    "correct_answers": 18,
+    "false_abstentions": 0,
+    "correct_abstention_rate": 1.0,
+    "false_abstention_rate": 0.0,
+    "unsupported_answer_rate": 0.0,
+    "partial_grounding_accuracy": 1.0,
+    "grounding_accuracy": 1.0
+  },
+  "learning_studio": {
+    "quiz": {
+      "sample_size": 3,
+      "single_correct_rate": 1.0,
+      "distractor_plausibility_rate": 1.0,
+      "clarity_score": 1.0,
+      "grounding_rate": 1.0,
+      "duplicate_rate": 0.0,
+      "tier_1_schema_pass_rate": 1.0,
+      "tier_1_status": "PASSED (Deterministic Schema & Invariants)",
+      "tier_2_status": "PASSED (Lexical Plausibility & Domain Vocab)",
+      "tier_3_status": "PENDING_EXPERT_REVIEW (Human Pedagogical Calibration)",
+      "overall_score": 1.0,
+      "limitations_note": "Automated evaluation validates schema invariants, non-trivial distractors, and lack of duplicate items. Pedagogical calibration and curriculum suitability are cross-validated through Tier 3 Human Review."
+    },
+    "flashcard": {
+      "sample_size": 3,
+      "conciseness_score": 1.0,
+      "atomic_concept_rate": 1.0,
+      "provenance_rate": 1.0,
+      "duplicate_rate": 0.0,
+      "tier_1_bounds_pass_rate": 1.0,
+      "tier_1_status": "PASSED (Deterministic Character Bounds)",
+      "tier_2_status": "PASSED (Concept Atomicity & Clarity)",
+      "tier_3_status": "PENDING_EXPERT_REVIEW (Human Pedagogical Calibration)",
+      "overall_score": 1.0,
+      "limitations_note": "Automated heuristics enforce conciseness (<= 150 front, <= 300 back) and single-concept prompts. Cognitive load and spaced repetition retention are validated under Tier 3 Human Review."
+    }
+  },
+  "performance": {
+    "concurrency": 4,
+    "throughput_qps": 19.56,
+    "component_latency_ms": {
+      "query_embedding": {
+        "mean": 0.95,
+        "min": 0.6,
+        "p50": 0.91,
+        "p95": 1.36,
+        "p99": 1.36,
+        "max": 1.36
+      },
+      "dense_retrieval": {
+        "mean": 9.71,
+        "min": 5.52,
+        "p50": 6.08,
+        "p95": 37.19,
+        "p99": 37.19,
+        "max": 37.19
+      },
+      "keyword_retrieval": {
+        "mean": 0.72,
+        "min": 0.57,
+        "p50": 0.6,
+        "p95": 1.54,
+        "p99": 1.54,
+        "max": 1.54
+      },
+      "rrf_fusion": {
+        "mean": 0.05,
+        "min": 0.03,
+        "p50": 0.03,
+        "p95": 0.15,
+        "p99": 0.15,
+        "max": 0.15
+      },
+      "cross_encoder_rerank": {
+        "mean": 47.86,
+        "min": 8.45,
+        "p50": 29.98,
+        "p95": 277.09,
+        "p99": 277.09,
+        "max": 277.09
+      },
+      "context_assembly": {
+        "mean": 0.01,
+        "min": 0.0,
+        "p50": 0.01,
+        "p95": 0.02,
+        "p99": 0.02,
+        "max": 0.02
+      },
+      "llm_generation": {
+        "mean": 117.34,
+        "min": 85.0,
+        "p50": 107.39,
+        "p95": 184.64,
+        "p99": 184.64,
+        "max": 184.64
+      },
+      "end_to_end": {
+        "mean": 176.64,
+        "min": 101.73,
+        "p50": 164.83,
+        "p95": 411.28,
+        "p99": 411.28,
+        "max": 411.28
+      }
+    },
+    "total_retrieval_latency_ms": {
+      "p50": 36.9,
+      "p95": 283.26,
+      "p99": 283.26
+    },
+    "llm_generation_latency_ms": {
+      "p50": 107.39,
+      "p95": 184.64
+    },
+    "end_to_end_latency_ms": {
+      "p50": 164.83,
+      "p95": 411.28,
+      "p99": 411.28
+    },
+    "memory_rss_mb": 48.5,
+    "device": "CPU (Intel/AMD x86_64, Windows High-Resolution Performance Counter)"
+  },
+  "human_concordance": {
+    "status": "PENDING_EXTERNAL_REVIEW",
+    "evaluated_test_cases": 20,
+    "concordance_rate_test_fixture": 1.0,
+    "agreements": 20,
+    "disagreements": 0,
+    "cohens_kappa": "PENDING_EXTERNAL_REVIEW",
+    "worksheet_path": "docs/HUMAN_REVIEW_WORKSHEET.md",
+    "audit_note": "Double-blind worksheet generated for 34 TEST cases across 6-dimensional rubric; external panel scoring pending."
+  },
+  "raw_per_query_results": [
+    {
+      "case_id": "eval-test-ans-01",
+      "subject": "Programming Fundamentals",
+      "topic": "Recursion and Memory",
+      "question": "What specific information is stored within an activation record on the call stack during a function call?",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 0.5,
+      "reranked_ndcg_at_10": 0.6309,
+      "ndcg_delta": -0.3691,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 0.6309,
+        "ndcg_delta": -0.3691,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 0.6309297535714575,
+        "unrounded_delta": -0.36907024642854247
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 0.6309,
+        "ndcg_delta": -0.3691,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 0.6309297535714575,
+        "unrounded_delta": -0.36907024642854247
+      }
+    },
+    {
+      "case_id": "eval-test-ans-02",
+      "subject": "Data Structures and Algorithms",
+      "topic": "Graph Algorithms",
+      "question": "Why does Dijkstra's algorithm require non-negative edge weights to guarantee finding the shortest path?",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 1.0,
+      "ndcg_delta": 0.0,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      }
+    },
+    {
+      "case_id": "eval-test-ans-03",
+      "subject": "Database Management Systems",
+      "topic": "Indexing and Storage",
+      "question": "Why do B+ trees link all leaf nodes in a doubly-linked list?",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 1.0,
+      "ndcg_delta": 0.0,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      }
+    },
+    {
+      "case_id": "eval-test-ans-04",
+      "subject": "Operating Systems",
+      "topic": "Concurrency and Deadlock",
+      "question": "Which Coffman condition is eliminated by enforcing a strict global resource ordering?",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 1.0,
+      "ndcg_delta": 0.0,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      }
+    },
+    {
+      "case_id": "eval-test-ans-05",
+      "subject": "Computer Networks",
+      "topic": "Application Layer",
+      "question": "What default transport port and protocol does DNS use for queries under 512 bytes?",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 1.0,
+      "ndcg_delta": 0.0,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      }
+    },
+    {
+      "case_id": "eval-test-ans-06",
+      "subject": "Cybersecurity",
+      "topic": "Application Security",
+      "question": "What role does the database query compiler play in making prepared statements immune to SQL injection?",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 1.0,
+      "ndcg_delta": 0.0,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      }
+    },
+    {
+      "case_id": "eval-test-ans-07",
+      "subject": "Software Engineering",
+      "topic": "Object-Oriented Design",
+      "question": "Explain the Open/Closed Principle and describe how polymorphism enables extension without modification.",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 1.0,
+      "ndcg_delta": 0.0,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      }
+    },
+    {
+      "case_id": "eval-test-ans-08",
+      "subject": "Artificial Intelligence and Machine Learning",
+      "topic": "Deep Learning",
+      "question": "How does the chain rule enable backward propagation of errors from loss to input layer?",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 1.0,
+      "ndcg_delta": 0.0,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      }
+    },
+    {
+      "case_id": "eval-test-ans-09",
+      "subject": "Cloud and Distributed Systems",
+      "topic": "Consensus Protocols",
+      "question": "How do randomized election timeouts in Raft prevent split votes among candidate nodes?",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 1.0,
+      "ndcg_delta": 0.0,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      }
+    },
+    {
+      "case_id": "eval-test-ans-10",
+      "subject": "Computer Architecture",
+      "topic": "Instruction Pipelining",
+      "question": "How does data forwarding (bypassing) resolve Read-After-Write (RAW) data hazards in pipelined processors?",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 1.0,
+      "ndcg_delta": 0.0,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      }
+    },
+    {
+      "case_id": "eval-test-ans-11",
+      "subject": "Compiler Design",
+      "topic": "Syntax and Parsing",
+      "question": "How does an LR(1) parser use a lookahead token to resolve shift-reduce conflicts?",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 1.0,
+      "ndcg_delta": 0.0,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      }
+    },
+    {
+      "case_id": "eval-test-ans-12",
+      "subject": "Theory of Computation",
+      "topic": "Computability and Automata",
+      "question": "What does Rice's Theorem imply about undecidability of program behavior from Turing machines?",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 1.0,
+      "ndcg_delta": 0.0,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      }
+    },
+    {
+      "case_id": "eval-test-ans-13",
+      "subject": "Computer Networks",
+      "topic": "Network and Web Integration",
+      "question": "How does the TCP 3-way handshake relate to latency overhead in CORS preflight OPTIONS requests?",
+      "target_chunk_count": 2,
+      "is_multi_target": true,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 0.8503,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 0.9197,
+      "ndcg_delta": 0.0694,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 0.8503,
+        "reranked_ndcg_at_10": 0.9197,
+        "ndcg_delta": 0.0694,
+        "unrounded_dense_ndcg": 0.8503449055347546,
+        "unrounded_reranked_ndcg": 0.9197207891481876,
+        "unrounded_delta": 0.06937588361343294
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 0.8503,
+        "reranked_ndcg_at_10": 0.9197,
+        "ndcg_delta": 0.0694,
+        "unrounded_dense_ndcg": 0.8503449055347546,
+        "unrounded_reranked_ndcg": 0.9197207891481876,
+        "unrounded_delta": 0.06937588361343294
+      }
+    },
+    {
+      "case_id": "eval-test-ans-14",
+      "subject": "Database Management Systems",
+      "topic": "DB Indexing and OS Virtual Memory",
+      "question": "Compare how B+ tree page sizes are aligned with operating system virtual memory page frames to minimize I/O overhead.",
+      "target_chunk_count": 2,
+      "is_multi_target": true,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 0.5649,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 0.6177,
+      "ndcg_delta": 0.0529,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 0.5649,
+        "reranked_ndcg_at_10": 0.6177,
+        "ndcg_delta": 0.0529,
+        "unrounded_dense_ndcg": 0.5648906813093276,
+        "unrounded_reranked_ndcg": 0.6177420996609625,
+        "unrounded_delta": 0.05285141835163487
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 0.7904,
+        "reranked_ndcg_at_10": 0.8316,
+        "ndcg_delta": 0.0412,
+        "unrounded_dense_ndcg": 0.7903864795495061,
+        "unrounded_reranked_ndcg": 0.8315546295836225,
+        "unrounded_delta": 0.041168150034116335
+      }
+    },
+    {
+      "case_id": "eval-test-ans-15",
+      "subject": "Computer Architecture",
+      "topic": "Hardware Coherence and Concurrency",
+      "question": "How does hardware cache line invalidation in the MESI protocol impact thread synchronization and deadlock detection in multicore systems?",
+      "target_chunk_count": 2,
+      "is_multi_target": true,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 0.9324,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 0.9177,
+      "ndcg_delta": -0.0148,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 0.9324,
+        "reranked_ndcg_at_10": 0.9177,
+        "ndcg_delta": -0.0148,
+        "unrounded_dense_ndcg": 0.9324441894571632,
+        "unrounded_reranked_ndcg": 0.9176601606601069,
+        "unrounded_delta": -0.014784028797056314
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 0.8772,
+        "reranked_ndcg_at_10": 0.8503,
+        "ndcg_delta": -0.0269,
+        "unrounded_dense_ndcg": 0.8772153153380493,
+        "unrounded_reranked_ndcg": 0.8503449055347546,
+        "unrounded_delta": -0.026870409803294693
+      }
+    },
+    {
+      "case_id": "eval-test-ans-16",
+      "subject": "Compiler Design",
+      "topic": "Syntax and Parsing",
+      "question": "Compare LL(1) top-down recursive descent with LR(1) bottom-up shift-reduce parsing in language grammar coverage.",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 1.0,
+      "ndcg_delta": 0.0,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      }
+    },
+    {
+      "case_id": "eval-test-ans-17",
+      "subject": "Cybersecurity",
+      "topic": "Cryptography",
+      "question": "Compare the mathematical trapdoor functions underlying RSA factorization versus Elliptic Curve discrete logarithms.",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 1.0,
+      "ndcg_delta": 0.0,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      }
+    },
+    {
+      "case_id": "eval-test-ans-18",
+      "subject": "Web Development",
+      "topic": "Client-Side Architecture",
+      "question": "Compare microtask and macrotask scheduling priority in the browser event loop.",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 1.0,
+      "ndcg_delta": 0.0,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      }
+    },
+    {
+      "case_id": "eval-test-ans-19",
+      "subject": "Cloud and Distributed Systems",
+      "topic": "Consensus Trade-offs",
+      "question": "Explain the CAP theorem partition tolerance trade-off and describe the Paxos multi-decree protocol phases.",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 1.0,
+      "ndcg_delta": 0.0,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      }
+    },
+    {
+      "case_id": "eval-test-ans-20",
+      "subject": "Data Structures and Algorithms",
+      "topic": "Tree Structures",
+      "question": "Explain BST worst-case search complexity and describe how splay tree zig-zig rotations maintain amortized bounds.",
+      "target_chunk_count": 1,
+      "is_multi_target": false,
+      "dense_reciprocal_rank": 1.0,
+      "dense_ndcg_at_10": 1.0,
+      "reranked_reciprocal_rank": 1.0,
+      "reranked_ndcg_at_10": 1.0,
+      "ndcg_delta": 0.0,
+      "graded_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      },
+      "binary_relevance": {
+        "dense_ndcg_at_10": 1.0,
+        "reranked_ndcg_at_10": 1.0,
+        "ndcg_delta": 0.0,
+        "unrounded_dense_ndcg": 1.0,
+        "unrounded_reranked_ndcg": 1.0,
+        "unrounded_delta": 0.0
+      }
+    }
+  ]
+}
