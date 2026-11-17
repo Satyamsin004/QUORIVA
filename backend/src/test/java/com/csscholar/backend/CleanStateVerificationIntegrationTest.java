@@ -41,21 +41,25 @@ class CleanStateVerificationIntegrationTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    private String testUserEmail;
+
     @AfterEach
     void tearDown() {
-        // Ensure clean state is preserved post-verification
-        jdbcTemplate.execute("DELETE FROM documents");
-        jdbcTemplate.execute("DELETE FROM workspace_members");
-        jdbcTemplate.execute("DELETE FROM workspaces");
-        jdbcTemplate.execute("DELETE FROM refresh_tokens");
-        jdbcTemplate.execute("DELETE FROM users");
+        if (testUserEmail != null) {
+            jdbcTemplate.update("DELETE FROM documents WHERE owner_id IN (SELECT id FROM users WHERE email = ?)", testUserEmail);
+            jdbcTemplate.update("DELETE FROM workspace_members WHERE user_id IN (SELECT id FROM users WHERE email = ?)", testUserEmail);
+            jdbcTemplate.update("DELETE FROM workspaces WHERE owner_id IN (SELECT id FROM users WHERE email = ?)", testUserEmail);
+            jdbcTemplate.update("DELETE FROM refresh_tokens WHERE user_id IN (SELECT id FROM users WHERE email = ?)", testUserEmail);
+            jdbcTemplate.update("DELETE FROM users WHERE email = ?", testUserEmail);
+        }
     }
 
     @Test
     @DisplayName("Verify fresh registration, clean empty state, and document upload initialization")
     void shouldVerifyCleanStateExperienceForNewUser() throws Exception {
         // 1. Fresh user registration
-        String uniqueEmail = "brand_new_user_" + UUID.randomUUID() + "@example.com";
+        testUserEmail = "brand_new_user_" + UUID.randomUUID() + "@example.com";
+        String uniqueEmail = testUserEmail;
         RegisterRequest registerReq = new RegisterRequest("New Scholar", uniqueEmail, "SecurePass123!");
 
         MvcResult registerResult = mockMvc.perform(post("/api/v1/auth/register")

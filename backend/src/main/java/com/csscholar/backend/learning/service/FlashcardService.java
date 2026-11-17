@@ -187,9 +187,9 @@ public class FlashcardService {
                     sb.append("--- Document: ").append(doc.getTitle()).append(" ---\n");
                     for (DocumentChunk chunk : chunks) {
                         sb.append(chunk.getContent()).append("\n\n");
-                        if (sb.length() > 25000) break;
+                        if (sb.length() > 8000) break;
                     }
-                    if (sb.length() > 25000) break;
+                    if (sb.length() > 8000) break;
                 }
 
                 contextText = sb.toString();

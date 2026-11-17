@@ -5,6 +5,7 @@ LLM generation, citation verification, and grounding assessment.
 """
 import logging
 import re
+import time
 from typing import Optional
 from sqlalchemy.orm import Session
 
@@ -41,6 +42,7 @@ class RAGService:
         self.citation_validator = citation_validator or CitationValidator()
 
     def answer(self, db: Session, request: InternalTutorChatRequest) -> TutorAnswerResponse:
+        start_time = time.time()
         logger.info(
             "RAG tutor answer requested for user=%s, workspace=%s, query='%s'",
             request.user_id, request.workspace_id, request.query[:60]
@@ -92,9 +94,12 @@ class RAGService:
             top_k=rag_config.max_retrieved_chunks
         )
         search_res = self.retrieval_service.search(db, search_req)
+        all_timings = dict(search_res.timings or {})
 
         # 3. Assemble Context & Assign Ephemeral Source IDs (S1, S2, ...)
+        t_ctx_start = time.time()
         context = self.context_assembler.assemble(search_res.results)
+        all_timings["context_assembly_ms"] = int((time.time() - t_ctx_start) * 1000)
 
         # If no documents matched in workspace and there is NO history, return guidance to upload materials
         if not search_res.results and not request.history:
@@ -108,15 +113,18 @@ class RAGService:
                 model_name=request.model_name or "none",
                 input_tokens=0,
                 output_tokens=0,
-                latency_ms=0
+                latency_ms=all_timings.get("total_retrieval_ms", 0),
+                timings=all_timings
             )
 
         # 4. Build Prompt with Injection Boundaries and Conversation History
+        t_prompt_start = time.time()
         messages = self.prompt_builder.build_messages(
             query=request.query,
             context=context,
             history=request.history
         )
+        all_timings["prompt_build_ms"] = int((time.time() - t_prompt_start) * 1000)
 
         # 5. Resolve LLM Provider & Generate Answer
         provider = LLMProviderFactory.get_provider(
@@ -134,6 +142,7 @@ class RAGService:
             config=gen_config,
             model_name=request.model_name
         )
+        all_timings["llm_generation_ms"] = llm_response.latency_ms
 
         # 6. Parse JSON Payload
         parsed = llm_response.parsed_json or {}
@@ -142,11 +151,24 @@ class RAGService:
         claimed_sources = parsed.get("cited_sources", [])
 
         # 7. Audit Citations & Compute Grounding Status
+        t_cite_start = time.time()
         verified_citations, grounding_status, final_insufficient = self.citation_validator.validate(
             answer=raw_answer,
             insufficient_evidence_flag=insufficient_evidence_flag,
             claimed_sources=claimed_sources,
             context=context
+        )
+        all_timings["citation_validation_ms"] = int((time.time() - t_cite_start) * 1000)
+
+        total_latency = int((time.time() - start_time) * 1000)
+        all_timings["total_latency_ms"] = total_latency
+
+        logger.info(
+            "Tutor request completed in %dms (retrieval=%dms, rerank=%dms, llm=%dms)",
+            total_latency,
+            all_timings.get("total_retrieval_ms", 0),
+            all_timings.get("reranking_ms", 0),
+            all_timings.get("llm_generation_ms", 0)
         )
 
         return TutorAnswerResponse(
@@ -158,6 +180,7 @@ class RAGService:
             model_name=llm_response.model_name,
             input_tokens=llm_response.input_tokens,
             output_tokens=llm_response.output_tokens,
-            latency_ms=llm_response.latency_ms
+            latency_ms=total_latency,
+            timings=all_timings
         )
 

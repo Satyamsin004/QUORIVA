@@ -4,6 +4,7 @@ Scores candidate query-chunk pairs using cross-encoder/ms-marco-MiniLM-L-6-v2,
 applying batching, deterministic excerpting, and finite numerical validation.
 """
 import logging
+import threading
 from dataclasses import dataclass
 from typing import List, Optional
 from uuid import UUID
@@ -44,12 +45,13 @@ class RerankedResult:
 
 class CrossEncoderReranker:
     """
-    Singleton cross-encoder reranker leveraging cross-encoder/ms-marco-MiniLM-L-6-v2.
+    Thread-safe Singleton cross-encoder reranker leveraging cross-encoder/ms-marco-MiniLM-L-6-v2.
     Loads once per process and supports CPU/CUDA automatic placement.
     """
 
     _instance: Optional["CrossEncoderReranker"] = None
     _model: Optional[CrossEncoder] = None
+    _lock = threading.Lock()
 
     def __init__(
         self,
@@ -70,9 +72,11 @@ class CrossEncoderReranker:
         model_name: Optional[str] = None,
         device: Optional[str] = None
     ) -> "CrossEncoderReranker":
-        """Get or initialize singleton instance."""
+        """Get or initialize thread-safe singleton instance."""
         if cls._instance is None:
-            cls._instance = cls(model_name, device)
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = cls(model_name, device)
         return cls._instance
 
     @staticmethod
@@ -86,22 +90,24 @@ class CrossEncoderReranker:
         return device_setting.lower()
 
     def get_model(self) -> CrossEncoder:
-        """Lazily load the cross-encoder model once per process."""
+        """Lazily load the cross-encoder model once per process with thread safety."""
         if self._model is None:
-            try:
-                logger.info("Loading cross-encoder model '%s' on device '%s'...", self.model_name, self.resolved_device)
-                self._model = CrossEncoder(
-                    self.model_name,
-                    max_length=512,
-                    device=self.resolved_device
-                )
-                logger.info("Cross-encoder model '%s' loaded successfully.", self.model_name)
-            except Exception as e:
-                logger.error("Failed to load cross-encoder model '%s': %s", self.model_name, e, exc_info=True)
-                raise RerankerError(
-                    f"Failed to load cross-encoder model '{self.model_name}': {e}",
-                    {"model_name": self.model_name, "device": self.resolved_device}
-                )
+            with self._lock:
+                if self._model is None:
+                    try:
+                        logger.info("Loading cross-encoder model '%s' on device '%s'...", self.model_name, self.resolved_device)
+                        self._model = CrossEncoder(
+                            self.model_name,
+                            max_length=512,
+                            device=self.resolved_device
+                        )
+                        logger.info("Cross-encoder model '%s' loaded successfully.", self.model_name)
+                    except Exception as e:
+                        logger.error("Failed to load cross-encoder model '%s': %s", self.model_name, e, exc_info=True)
+                        raise RerankerError(
+                            f"Failed to load cross-encoder model '{self.model_name}': {e}",
+                            {"model_name": self.model_name, "device": self.resolved_device}
+                        )
         return self._model
 
     def rerank(

@@ -109,18 +109,24 @@ class EmbeddingRepository:
                     }
                     for e in embeddings
                 ]
-                stmt = pg_insert(ChunkEmbedding).values(data)
-                stmt = stmt.on_conflict_do_update(
-                    constraint="uq_chunk_embedding",
-                    set_={
-                        "embedding": stmt.excluded.embedding,
-                        "content_hash": stmt.excluded.content_hash,
-                        "token_count": stmt.excluded.token_count,
-                    }
-                )
-                db.execute(stmt)
+                # Chunk large batches into sub-batches of 100 to stay well within parameter limits
+                CHUNK_SIZE = 100
+                total_inserted = 0
+                for i in range(0, len(data), CHUNK_SIZE):
+                    sub_batch = data[i:i + CHUNK_SIZE]
+                    stmt = pg_insert(ChunkEmbedding).values(sub_batch)
+                    stmt = stmt.on_conflict_do_update(
+                        constraint="uq_chunk_embedding",
+                        set_={
+                            "embedding": stmt.excluded.embedding,
+                            "content_hash": stmt.excluded.content_hash,
+                            "token_count": stmt.excluded.token_count,
+                        }
+                    )
+                    db.execute(stmt)
+                    total_inserted += len(sub_batch)
                 db.commit()
-                return len(embeddings)
+                return total_inserted
             except Exception as e:
                 logger.error("Failed to persist chunk embeddings batch: %s", e, exc_info=True)
                 raise EmbeddingPersistenceError(f"Database insertion failed: {e}")

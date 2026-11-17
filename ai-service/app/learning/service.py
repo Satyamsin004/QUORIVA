@@ -78,9 +78,10 @@ class LearningGenerationService:
             if not explanation:
                 explanation = "Based on the provided Computer Science curriculum materials."
 
-            # Process options
+            # Process options with deduplication and strict validation
             raw_options = q_data.get("options", [])
             validated_options: List[GeneratedOptionDto] = []
+            seen_options = set()
             correct_count = 0
 
             if isinstance(raw_options, list):
@@ -88,31 +89,45 @@ class LearningGenerationService:
                     if isinstance(opt_data, dict):
                         opt_text = str(opt_data.get("option_text", "")).strip()
                         is_corr = bool(opt_data.get("is_correct", False))
-                        if opt_text:
+                        if opt_text and opt_text.lower() not in seen_options:
+                            seen_options.add(opt_text.lower())
                             if is_corr:
                                 correct_count += 1
                             validated_options.append(
                                 GeneratedOptionDto(
-                                    optionIndex=opt_idx,
+                                    optionIndex=len(validated_options),
                                     optionText=opt_text,
                                     isCorrect=is_corr
                                 )
                             )
 
             # Fallback if options are malformed
-            if q_type == "TRUE_FALSE" and len(validated_options) < 2:
-                validated_options = [
-                    GeneratedOptionDto(optionIndex=0, optionText="True", isCorrect=True),
-                    GeneratedOptionDto(optionIndex=1, optionText="False", isCorrect=False),
-                ]
-                correct_count = 1
+            if q_type == "TRUE_FALSE":
+                if len(validated_options) < 2:
+                    validated_options = [
+                        GeneratedOptionDto(optionIndex=0, optionText="True", isCorrect=True),
+                        GeneratedOptionDto(optionIndex=1, optionText="False", isCorrect=False),
+                    ]
+                    correct_count = 1
+                else:
+                    # Enforce exactly one is_correct
+                    has_true = any(o.is_correct for o in validated_options)
+                    if not has_true:
+                        validated_options[0].is_correct = True
             elif q_type == "MULTIPLE_CHOICE":
                 if len(validated_options) < 2:
                     continue
                 # Ensure exactly one option is marked correct
                 if correct_count != 1 and validated_options:
-                    for i, o in enumerate(validated_options):
-                        o.is_correct = (i == 0)
+                    # If multiple were marked correct, keep only the first true
+                    marked_one = False
+                    for o in validated_options:
+                        if o.is_correct and not marked_one:
+                            marked_one = True
+                        else:
+                            o.is_correct = False
+                    if not marked_one:
+                        validated_options[0].is_correct = True
 
             seen_questions.add(q_text.lower())
             validated_questions.append(

@@ -111,12 +111,15 @@ class IngestionPipeline:
             page_count = parsed_doc.total_pages or parsed_doc.total_slides
 
             with get_db_session() as db:
-                doc = db.query(Document).filter(Document.id == document_id).first()
-                if doc:
-                    if page_count:
-                        doc.page_count = page_count
-                    doc.processing_status = "PROCESSED"
-                    doc.updated_at = datetime.now(timezone.utc)
+                doc = db.query(Document).filter(Document.id == document_id).with_for_update().first()
+                if not doc or doc.deleted_at is not None:
+                    logger.info("Document %s was deleted or missing. Skipping chunk persistence.", document_id)
+                    return {"document_id": str(document_id), "status": "SKIPPED_DELETED"}
+
+                if page_count:
+                    doc.page_count = page_count
+                doc.processing_status = "PROCESSED"
+                doc.updated_at = datetime.now(timezone.utc)
 
                 # Remove any existing chunks for this version (idempotency)
                 db.query(DocumentChunk).filter(
@@ -124,7 +127,7 @@ class IngestionPipeline:
                     DocumentChunk.processing_version == processing_version
                 ).delete()
 
-                # Bulk insert new chunks
+                # Bulk insert new chunks in safe batches of 250 to optimize memory & DB transactions
                 db_chunks = [
                     DocumentChunk(
                         document_id=document_id,
@@ -142,7 +145,10 @@ class IngestionPipeline:
                     )
                     for chunk in chunk_models
                 ]
-                db.bulk_save_objects(db_chunks)
+                BATCH_INSERT_SIZE = 250
+                for i in range(0, len(db_chunks), BATCH_INSERT_SIZE):
+                    db.bulk_save_objects(db_chunks[i:i + BATCH_INSERT_SIZE])
+                    db.flush()
 
                 # Update job to COMPLETED
                 if job_id or (job and job.id):
@@ -168,7 +174,13 @@ class IngestionPipeline:
                         doc.updated_at = datetime.now(timezone.utc)
                 logger.info("Automatically enqueued embedding generation for document %s", document_id)
             except Exception as emb_err:
+                # Surface a dispatch failure instead of showing an endless pending state.
                 logger.warning("Could not auto-enqueue embedding task for document %s: %s", document_id, emb_err)
+                with get_db_session() as db:
+                    doc = db.query(Document).filter(Document.id == document_id).first()
+                    if doc and doc.deleted_at is None:
+                        doc.embedding_status = "FAILED"
+                        doc.updated_at = datetime.now(timezone.utc)
 
             logger.info(
                 "Document ingestion completed successfully: document_id=%s, chunks=%d, total_tokens=%d, pages=%s",
@@ -196,7 +208,12 @@ class IngestionPipeline:
 
                 doc = db.query(Document).filter(Document.id == document_id).first()
                 if doc:
-                    doc.processing_status = "FAILED"
-                    doc.updated_at = datetime.now(timezone.utc)
+                    if doc.deleted_at is not None:
+                        logger.info("Document %s was deleted by user; keeping DELETED status.", document_id)
+                    elif doc.processing_status == "PROCESSED":
+                        logger.info("Document %s is already PROCESSED by another task; keeping PROCESSED status.", document_id)
+                    else:
+                        doc.processing_status = "FAILED"
+                        doc.updated_at = datetime.now(timezone.utc)
 
             raise

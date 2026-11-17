@@ -43,6 +43,9 @@ public class TutorChatInternalResponse {
     @JsonAlias({"latency_ms", "latencyMs"})
     private Long latencyMs;
 
+    @JsonProperty("timings")
+    private java.util.Map<String, Long> timings;
+
     public TutorChatInternalResponse() {}
 
     public String getAnswer() {
@@ -115,6 +118,14 @@ public class TutorChatInternalResponse {
 
     public void setLatencyMs(Long latencyMs) {
         this.latencyMs = latencyMs;
+    }
+
+    public java.util.Map<String, Long> getTimings() {
+        return timings;
+    }
+
+    public void setTimings(java.util.Map<String, Long> timings) {
+        this.timings = timings;
     }
 }
 

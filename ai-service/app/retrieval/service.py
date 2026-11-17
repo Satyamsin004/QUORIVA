@@ -4,7 +4,8 @@ Coordinates query processing, dense pgvector retrieval, PostgreSQL full-text sea
 Reciprocal Rank Fusion, and cross-encoder reranking.
 """
 import logging
-from typing import Optional
+import time
+from typing import Optional, Dict
 from uuid import UUID
 from sqlalchemy.orm import Session
 
@@ -59,7 +60,7 @@ class RetrievalService:
         top_k = request.top_k or retrieval_config.reranker_top_k
         dense_k = request.dense_candidate_count or retrieval_config.dense_candidate_count
         keyword_k = request.keyword_candidate_count or retrieval_config.keyword_candidate_count
-        hybrid_k = request.hybrid_candidate_count or retrieval_config.hybrid_candidate_count
+        hybrid_k = min(request.hybrid_candidate_count or retrieval_config.hybrid_candidate_count, 16)
         rrf_k = request.rrf_k or retrieval_config.rrf_k
 
         logger.info(
@@ -67,39 +68,82 @@ class RetrievalService:
             workspace_id, request.user_id, top_k, dense_k, keyword_k, hybrid_k, rrf_k
         )
 
+        timings: Dict[str, int] = {}
+        t0 = time.time()
+
         # 1. Clean and validate query, format BGE instructed query
         clean_query, instructed_query = self.query_processor.process(raw_query)
 
-        # 2. Dense semantic retrieval
-        query_embedding = self.dense_retriever.generate_query_embedding(instructed_query)
-        dense_candidates = self.dense_retriever.search(
-            db=db,
-            workspace_id=workspace_id,
-            query_vector=query_embedding,
-            candidate_count=dense_k
-        )
+        # 2 & 3. Run Dense retrieval and Keyword retrieval concurrently to minimize latency
+        from concurrent.futures import ThreadPoolExecutor
+        from app.database.connection import get_db_session
 
-        # 3. PostgreSQL full-text keyword retrieval
-        keyword_candidates = self.keyword_retriever.search(
-            db=db,
-            workspace_id=workspace_id,
-            query_text=clean_query,
-            candidate_count=keyword_k
-        )
+        dense_candidates = []
+        keyword_candidates = []
+
+        def _run_dense():
+            t_emb_start = time.time()
+            query_embedding = self.dense_retriever.generate_query_embedding(instructed_query)
+            t_emb_end = time.time()
+            timings["query_embedding_ms"] = int((t_emb_end - t_emb_start) * 1000)
+
+            with get_db_session() as dense_db:
+                t_dense_start = time.time()
+                res = self.dense_retriever.search(
+                    db=dense_db,
+                    workspace_id=workspace_id,
+                    query_vector=query_embedding,
+                    candidate_count=dense_k
+                )
+                timings["dense_search_ms"] = int((time.time() - t_dense_start) * 1000)
+                return res
+
+        def _run_keyword():
+            with get_db_session() as kw_db:
+                t_kw_start = time.time()
+                res = self.keyword_retriever.search(
+                    db=kw_db,
+                    workspace_id=workspace_id,
+                    query_text=clean_query,
+                    candidate_count=keyword_k
+                )
+                timings["keyword_search_ms"] = int((time.time() - t_kw_start) * 1000)
+                return res
+
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            future_dense = executor.submit(_run_dense)
+            future_kw = executor.submit(_run_keyword)
+            dense_candidates = future_dense.result()
+            keyword_candidates = future_kw.result()
 
         # 4. Reciprocal Rank Fusion (RRF)
+        t_rrf_start = time.time()
         hybrid_candidates = self.rrf.fuse(
             dense_candidates=dense_candidates,
             keyword_candidates=keyword_candidates,
             k=rrf_k,
             limit=hybrid_k
         )
+        timings["rrf_ms"] = int((time.time() - t_rrf_start) * 1000)
 
         # 5. Cross-Encoder Reranking
+        t_rerank_start = time.time()
         reranked_results = self.reranker.rerank(
             query=clean_query,
             candidates=hybrid_candidates,
             top_k=top_k
+        )
+        timings["reranking_ms"] = int((time.time() - t_rerank_start) * 1000)
+        timings["total_retrieval_ms"] = int((time.time() - t0) * 1000)
+
+        logger.info(
+            "Retrieval timings breakdown: query_embedding=%dms, dense_search=%dms, keyword_search=%dms, rrf=%dms, reranking=%dms, total=%dms",
+            timings.get("query_embedding_ms", 0),
+            timings.get("dense_search_ms", 0),
+            timings.get("keyword_search_ms", 0),
+            timings.get("rrf_ms", 0),
+            timings.get("reranking_ms", 0),
+            timings["total_retrieval_ms"]
         )
 
         # 6. Map to response items
@@ -136,6 +180,7 @@ class RetrievalService:
             query=clean_query,
             workspace_id=workspace_id,
             total_candidates=len(hybrid_candidates),
-            results=items
+            results=items,
+            timings=timings
         )
 

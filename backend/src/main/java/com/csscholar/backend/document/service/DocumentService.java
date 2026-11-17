@@ -143,9 +143,7 @@ public class DocumentService {
         );
         document.setId(documentId);
         document.setScanStatus(ScanStatus.PENDING);
-        if (request.getSubject() != null && !request.getSubject().isBlank()) {
-            document.setSubject(request.getSubject().trim());
-        }
+        document.setSubject(SubjectClassifier.resolve(request.getSubject(), request.getFilename()));
         Document saved = documentRepository.save(document);
 
         String presignedUrl = storageService.generatePresignedUploadUrl(

@@ -58,6 +58,7 @@ class TutorAnswerResponse(BaseModel):
     input_tokens: Optional[int] = None
     output_tokens: Optional[int] = None
     latency_ms: int = 0
+    timings: Optional[Dict[str, int]] = None
 
 
 class InternalTutorChatRequest(BaseModel):

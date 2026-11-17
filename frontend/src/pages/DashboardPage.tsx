@@ -375,12 +375,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           ) : (
             <div className="h-44 flex items-end gap-3 sm:gap-6 pt-6 pb-2 px-2">
               {activity.slice(-7).map((day, idx) => {
-                const totalActivity = (day.quizzesTaken || 0) + (day.cardsReviewed || 0);
+                const quizzes = day.quizzesTaken ?? (day as any).quizAttempts ?? 0;
+                const cards = day.cardsReviewed ?? (day as any).flashcardReviews ?? 0;
+                const totalActivity = quizzes + cards;
                 const maxVal = Math.max(
-                  ...activity.map((a) => (a.quizzesTaken || 0) + (a.cardsReviewed || 0)),
+                  ...activity.map((a) => (a.quizzesTaken ?? (a as any).quizAttempts ?? 0) + (a.cardsReviewed ?? (a as any).flashcardReviews ?? 0)),
                   5
                 );
-                const heightPercent = Math.min(Math.round((totalActivity / maxVal) * 100), 100);
+                const heightPercent = totalActivity > 0 ? Math.min(Math.round((totalActivity / maxVal) * 100), 100) : 0;
                 const dateLabel = new Date(day.date).toLocaleDateString(undefined, {
                   weekday: 'short',
                 });
@@ -388,30 +390,35 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 return (
                   <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
                     <div className="w-full flex flex-col items-center justify-end h-full">
-                      <div
-                        className="w-full max-w-[28px] rounded-t-md transition-all duration-500 flex flex-col justify-end overflow-hidden"
-                        style={{ height: `${Math.max(heightPercent, 6)}%` }}
-                        title={`${day.date}: ${day.quizzesTaken || 0} quizzes, ${day.cardsReviewed || 0} cards`}
-                      >
+                      {totalActivity === 0 ? (
                         <div
-                          className="w-full bg-[#FF2D8D]"
-                          style={{
-                            height: `${totalActivity > 0
-                                ? ((day.quizzesTaken || 0) / totalActivity) * 100
-                                : 50
-                              }%`,
-                          }}
+                          className="w-full max-w-[28px] h-2 rounded-full bg-white/5 border border-white/5 transition-all group-hover:bg-white/10"
+                          title={`${day.date}: No activity recorded`}
                         />
+                      ) : (
                         <div
-                          className="w-full bg-[#C7F000]"
-                          style={{
-                            height: `${totalActivity > 0
-                                ? ((day.cardsReviewed || 0) / totalActivity) * 100
-                                : 50
-                              }%`,
-                          }}
-                        />
-                      </div>
+                          className="w-full max-w-[28px] rounded-t-md transition-all duration-500 flex flex-col justify-end overflow-hidden shadow-lg"
+                          style={{ height: `${Math.max(heightPercent, 12)}%` }}
+                          title={`${day.date}: ${quizzes} quizzes, ${cards} cards`}
+                        >
+                          {quizzes > 0 && (
+                            <div
+                              className="w-full bg-[#FF2D8D] transition-all"
+                              style={{
+                                height: `${(quizzes / totalActivity) * 100}%`,
+                              }}
+                            />
+                          )}
+                          {cards > 0 && (
+                            <div
+                              className="w-full bg-[#C7F000] transition-all"
+                              style={{
+                                height: `${(cards / totalActivity) * 100}%`,
+                              }}
+                            />
+                          )}
+                        </div>
+                      )}
                     </div>
                     <span className="text-[10px] text-[#A1A1AA] font-mono group-hover:text-white transition">
                       {dateLabel}

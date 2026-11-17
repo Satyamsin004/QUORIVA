@@ -5,6 +5,7 @@ import {
   QuizPractice,
   QuizAttemptResponse,
   QuizAttemptReview,
+  SubjectMaterial,
   FlashcardDeck,
   Flashcard,
   DueCard,
@@ -33,6 +34,20 @@ export const learningService = {
 
   async listQuizzes(): Promise<QuizSummary[]> {
     const res = await apiClient.get<ApiResponse<QuizSummary[]>>('/learning/quizzes');
+    return res.data.data;
+  },
+
+  async getSubjectMaterials(workspaceId: string, subjectName: string): Promise<SubjectMaterial[]> {
+    const res = await apiClient.get<ApiResponse<SubjectMaterial[]>>(
+      `/learning/subjects/${encodeURIComponent(subjectName)}/materials?workspaceId=${workspaceId}`
+    );
+    return res.data.data;
+  },
+
+  async getRevisionHistory(workspaceId: string, subjectName: string): Promise<QuizSummary[]> {
+    const res = await apiClient.get<ApiResponse<QuizSummary[]>>(
+      `/learning/quizzes/revision-history?subject=${encodeURIComponent(subjectName)}&workspaceId=${workspaceId}`
+    );
     return res.data.data;
   },
 

@@ -3,8 +3,34 @@ export type QuestionType = 'MULTIPLE_CHOICE' | 'TRUE_FALSE';
 export type AttemptStatus = 'IN_PROGRESS' | 'SUBMITTED' | 'ABANDONED';
 export type ReviewRating = 'AGAIN' | 'HARD' | 'GOOD' | 'EASY';
 export type ReviewState = 'NEW' | 'LEARNING' | 'REVIEW' | 'GRADUATED';
-export type LearningSourceType = 'WORKSPACE_DOCUMENTS' | 'KNOWLEDGE_TOPIC' | 'LIBRARY_RESOURCE' | 'CUSTOM' | 'MANUAL';
+export type LearningSourceType = 'WORKSPACE_DOCUMENTS' | 'KNOWLEDGE_TOPIC' | 'LIBRARY_RESOURCE' | 'CUSTOM' | 'MANUAL' | 'TARGETED_REVISION';
 export type SessionType = 'QUIZ_ATTEMPT' | 'FLASHCARD_REVIEW';
+
+export interface TargetMaterialRequest {
+  documentId: string;
+  startPage?: number;
+  endPage?: number;
+}
+
+export interface TargetMaterialSummary {
+  documentId: string;
+  title: string;
+  startPage: number;
+  endPage: number;
+  pageCount: number;
+}
+
+export interface SubjectMaterial {
+  documentId: string;
+  title: string;
+  originalFilename: string;
+  fileType: string;
+  fileSize: number;
+  pageCount: number;
+  subject: string;
+  processingStatus: string;
+  uploadedAt: string;
+}
 
 // Quiz Practice Types (Answers strictly omitted for security)
 export interface QuizOptionPractice {
@@ -50,6 +76,7 @@ export interface QuizSummary {
   description?: string;
   sourceType: LearningSourceType;
   subjectName?: string;
+  targetMaterials?: string;
   topicName?: string;
   difficulty: LearningDifficultyLevel;
   totalQuestions: number;
@@ -232,6 +259,9 @@ export interface DailyActivity {
   quizzesTaken: number;
   cardsReviewed: number;
   studyTimeMinutes: number;
+  quizAttempts?: number;
+  flashcardReviews?: number;
+  totalMinutes?: number;
 }
 
 // Requests
@@ -250,6 +280,7 @@ export interface GenerateQuizRequest {
   difficulty?: LearningDifficultyLevel;
   difficultyLevel?: LearningDifficultyLevel;
   questionCount?: number;
+  targetMaterials?: TargetMaterialRequest[];
 }
 
 export interface GenerateFlashcardsRequest {

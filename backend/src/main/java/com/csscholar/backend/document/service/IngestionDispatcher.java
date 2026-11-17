@@ -38,20 +38,27 @@ public class IngestionDispatcher {
     }
 
     @Scheduled(fixedDelay = 5000, initialDelay = 5000)
+    @Transactional
     public void pollPendingOutboxEvents() {
         List<IngestionOutbox> pendingList = outboxRepository.findPendingEvents("PENDING", PageRequest.of(0, 10));
         for (IngestionOutbox outbox : pendingList) {
-            dispatchOutboxEntry(outbox.getId());
+            try {
+                dispatchOutboxEntry(outbox.getId());
+            } catch (Exception e) {
+                logger.error("Error during scheduled dispatch for outbox entry {}: {}", outbox.getId(), e.getMessage());
+            }
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void dispatchOutboxEntry(java.util.UUID outboxId) {
-        outboxRepository.findById(outboxId).ifPresent(outbox -> {
-            if (!"PENDING".equalsIgnoreCase(outbox.getStatus())) {
-                return;
-            }
+        int claimed = outboxRepository.claimOutboxForDispatch(outboxId);
+        if (claimed == 0) {
+            logger.debug("Outbox record {} was already claimed or is not pending, skipping dispatch.", outboxId);
+            return;
+        }
 
+        outboxRepository.findById(outboxId).ifPresent(outbox -> {
             boolean success = ingestionClient.triggerIngestion(outbox.getPayload());
             if (success) {
                 outbox.setStatus("DISPATCHED");
@@ -66,6 +73,8 @@ public class IngestionDispatcher {
                 if (retries >= MAX_RETRIES) {
                     outbox.setStatus("FAILED");
                     logger.warn("Outbox record {} reached max retries ({}), marked as FAILED.", outboxId, MAX_RETRIES);
+                } else {
+                    outbox.setStatus("PENDING");
                 }
                 outboxRepository.save(outbox);
             }

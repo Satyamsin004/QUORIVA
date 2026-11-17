@@ -104,7 +104,10 @@ def trigger_embedding_generation(
         db.commit()
     except Exception as e:
         logger.error("Failed to enqueue embedding Celery task for document %s: %s", request.document_id, e)
+        job.status = "FAILED"
+        job.completed_at = datetime.utcnow()
         job.error_message = f"Failed to enqueue task: {e}"
+        doc.embedding_status = "FAILED"
         db.commit()
 
     return EmbeddingJobResponse(

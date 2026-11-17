@@ -1,7 +1,7 @@
 """
 CS Scholar AI - Retrieval Pydantic Schemas & Data Transfer Objects
 """
-from typing import List, Optional
+from typing import List, Optional, Dict
 from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict
 
@@ -57,4 +57,5 @@ class InternalSearchResponse(BaseModel):
     workspace_id: UUID = Field(..., alias="workspaceId")
     total_candidates: int = Field(..., alias="totalCandidates")
     results: List[SearchResultItem]
+    timings: Optional[Dict[str, int]] = Field(default=None, alias="timings")
 

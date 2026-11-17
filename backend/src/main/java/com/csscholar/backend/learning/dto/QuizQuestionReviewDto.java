@@ -1,6 +1,8 @@
 package com.csscholar.backend.learning.dto;
 
 import com.csscholar.backend.learning.enums.QuestionType;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +19,11 @@ public class QuizQuestionReviewDto {
     private Integer pageNumber;
     private Integer slideNumber;
     private String topicName;
+
+    @JsonProperty("isCorrect")
+    @JsonAlias({"is_correct", "correct", "isCorrect"})
     private Boolean isCorrect;
+
     private UUID selectedOptionId;
     private UUID correctOptionId;
     private List<QuizOptionReviewDto> options = new ArrayList<>();

@@ -111,7 +111,84 @@ public class QuizService {
         }
 
         // 1. Determine Context Source
-        if (request.getWorkspaceId() != null) {
+        String targetMaterialsJson = null;
+
+        if (request.getTargetMaterials() != null && !request.getTargetMaterials().isEmpty()) {
+            // Targeted Subject Revision flow
+            sourceType = LearningSourceType.TARGETED_REVISION;
+            workspaceService.getWorkspaceById(user.getId(), request.getWorkspaceId());
+            workspace = workspaceRepository.findById(request.getWorkspaceId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Workspace not found"));
+
+            String subject = request.getSubjectName() != null ? request.getSubjectName().trim() : "Targeted Revision";
+            sourceTitle = subject + " Targeted Revision";
+
+            List<TargetMaterialSummaryDto> summaryList = new ArrayList<>();
+            StringBuilder sb = new StringBuilder();
+
+            for (TargetMaterialRequest mat : request.getTargetMaterials()) {
+                Document doc = documentRepository.findActiveByIdWithDetails(mat.getDocumentId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Document not found: " + mat.getDocumentId()));
+
+                if (!doc.getWorkspace().getId().equals(workspace.getId())) {
+                    throw new ForbiddenException("Document " + doc.getTitle() + " does not belong to the selected workspace.");
+                }
+                if (!"PROCESSED".equalsIgnoreCase(doc.getProcessingStatus().name())) {
+                    throw new BadRequestException("Document '" + doc.getTitle() + "' is still processing and cannot be used for revision yet.");
+                }
+
+                int totalPages = doc.getPageCount() != null && doc.getPageCount() > 0 ? doc.getPageCount() : 1;
+                int startPage = (mat.getStartPage() != null && mat.getStartPage() > 0) ? mat.getStartPage() : 1;
+                int endPage = (mat.getEndPage() != null && mat.getEndPage() > 0) ? mat.getEndPage() : totalPages;
+
+                if (startPage > endPage) {
+                    throw new BadRequestException(String.format("Invalid page range for '%s': Start page (%d) cannot be greater than end page (%d).",
+                            doc.getTitle(), startPage, endPage));
+                }
+                if (endPage > totalPages) {
+                    throw new BadRequestException(String.format("Invalid page range for '%s': End page (%d) exceeds document total pages (%d).",
+                            doc.getTitle(), endPage, totalPages));
+                }
+
+                summaryList.add(new TargetMaterialSummaryDto(doc.getId(), doc.getTitle(), startPage, endPage, totalPages));
+
+                // Fetch chunks strictly within the targeted page range
+                List<DocumentChunk> chunks = chunkRepository.findByDocumentIdAndPageNumberBetweenOrderByPageNumberAscChunkIndexAsc(
+                        doc.getId(), startPage, endPage
+                );
+
+                if (chunks.isEmpty() && startPage == 1 && endPage >= totalPages) {
+                    chunks = chunkRepository.findByDocumentIdAndProcessingVersionOrderByChunkIndexAsc(doc.getId(), 1);
+                }
+
+                if (chunks.isEmpty()) {
+                    throw new BadRequestException(String.format("No readable content found in pages %d-%d of '%s'. Please select a valid page range.",
+                            startPage, endPage, doc.getTitle()));
+                }
+
+                sb.append("\n=== Document: ").append(doc.getTitle())
+                        .append(" (Pages ").append(startPage).append("-").append(endPage).append(") ===\n");
+
+                for (DocumentChunk chunk : chunks) {
+                    sb.append("[Document: ").append(doc.getTitle())
+                            .append(", Page: ").append(chunk.getPageNumber() != null ? chunk.getPageNumber() : startPage)
+                            .append("]\n")
+                            .append(chunk.getContent()).append("\n\n");
+                    if (sb.length() > 8000) break;
+                }
+                if (sb.length() > 8000) break;
+            }
+
+            contextText = sb.toString();
+            sourceId = summaryList.get(0).getDocumentId().toString();
+
+            try {
+                targetMaterialsJson = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(summaryList);
+            } catch (Exception e) {
+                log.warn("Could not serialize target materials JSON: {}", e.getMessage());
+            }
+
+        } else if (request.getWorkspaceId() != null) {
             // Workspace Documents
             workspaceService.getWorkspaceById(user.getId(), request.getWorkspaceId());
             workspace = workspaceRepository.findById(request.getWorkspaceId())
@@ -125,6 +202,9 @@ public class QuizService {
                             .orElseThrow(() -> new ResourceNotFoundException("Document not found: " + docId));
                     if (!doc.getWorkspace().getId().equals(workspace.getId())) {
                         throw new ForbiddenException("Document " + docId + " does not belong to the selected workspace.");
+                    }
+                    if (!"PROCESSED".equals(doc.getProcessingStatus().name())) {
+                        throw new BadRequestException("Document " + doc.getTitle() + " is still processing and cannot be used for a quiz yet.");
                     }
                     docsToUse.add(doc);
                 }
@@ -154,9 +234,9 @@ public class QuizService {
                     sb.append("--- Document: ").append(doc.getTitle()).append(" ---\n");
                     for (DocumentChunk chunk : chunks) {
                         sb.append(chunk.getContent()).append("\n\n");
-                        if (sb.length() > 25000) break; // Bounded context budget
+                        if (sb.length() > 8000) break; // Bounded context budget for LLM TPM limits
                     }
-                    if (sb.length() > 25000) break;
+                    if (sb.length() > 8000) break;
                 }
 
                 contextText = sb.toString();
@@ -252,6 +332,11 @@ public class QuizService {
                 request.getTimeLimitMinutes()
         );
 
+        if (sourceType == LearningSourceType.TARGETED_REVISION) {
+            quiz.setSubjectName(request.getSubjectName() != null ? request.getSubjectName().trim() : "Targeted Revision");
+            quiz.setTargetMaterials(targetMaterialsJson);
+        }
+
         for (GeneratedQuestionDto qDto : aiResponse.getQuestions()) {
             QuestionType qType;
             try {
@@ -298,6 +383,46 @@ public class QuizService {
         return quizRepository.findByUserIdOrderByCreatedAtDesc(userId)
                 .stream()
                 .map(this::mapToSummary)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get revision history for a subject.
+     */
+    @Transactional(readOnly = true)
+    public List<QuizSummaryDto> getRevisionHistory(UUID userId, UUID workspaceId, String subjectName) {
+        if (workspaceId != null) {
+            return quizRepository.findByUserIdAndWorkspaceIdAndSubjectNameOrderByCreatedAtDesc(userId, workspaceId, subjectName)
+                    .stream()
+                    .map(this::mapToSummary)
+                    .collect(Collectors.toList());
+        }
+        return quizRepository.findByUserIdAndSubjectNameOrderByCreatedAtDesc(userId, subjectName)
+                .stream()
+                .map(this::mapToSummary)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * List all materials for a given subject to populate the Targeted Revision scope selector.
+     */
+    @Transactional(readOnly = true)
+    public List<SubjectMaterialDto> getSubjectMaterials(UUID userId, UUID workspaceId, String subjectName) {
+        workspaceService.getWorkspaceById(userId, workspaceId);
+        List<Document> docs = documentRepository.findByWorkspaceIdAndSubjectAndDeletedAtIsNull(workspaceId, subjectName);
+
+        return docs.stream()
+                .map(doc -> new SubjectMaterialDto(
+                        doc.getId(),
+                        doc.getTitle(),
+                        doc.getOriginalFilename(),
+                        doc.getFileType() != null ? doc.getFileType().name() : "PDF",
+                        doc.getFileSize(),
+                        doc.getPageCount() != null ? doc.getPageCount() : 1,
+                        doc.getSubject(),
+                        doc.getProcessingStatus() != null ? doc.getProcessingStatus().name() : "PENDING",
+                        doc.getUploadedAt() != null ? doc.getUploadedAt() : doc.getCreatedAt()
+                ))
                 .collect(Collectors.toList());
     }
 
@@ -355,7 +480,7 @@ public class QuizService {
     }
 
     /**
-     * Start a new quiz attempt.
+     * Start a new quiz attempt or resume existing in-progress attempt.
      */
     @Transactional
     public QuizAttemptResponseDto startAttempt(UUID quizId, UUID userId) {
@@ -364,6 +489,16 @@ public class QuizService {
 
         Quiz quiz = quizRepository.findByIdAndUserId(quizId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz not found with id: " + quizId));
+
+        // Reuse existing IN_PROGRESS attempt if available to prevent duplicate dangling attempts
+        Optional<QuizAttempt> existingAttempt = attemptRepository.findByQuizIdAndUserIdOrderByStartedAtDesc(quizId, userId)
+                .stream()
+                .filter(a -> a.getStatus() == AttemptStatus.IN_PROGRESS)
+                .findFirst();
+
+        if (existingAttempt.isPresent()) {
+            return mapToAttemptResponse(existingAttempt.get());
+        }
 
         QuizAttempt attempt = new QuizAttempt(quiz, user, quiz.getTotalQuestions());
         QuizAttempt saved = attemptRepository.save(attempt);
@@ -577,6 +712,8 @@ public class QuizService {
                 quiz.getDifficultyLevel(),
                 quiz.getTotalQuestions(),
                 quiz.getTimeLimitMinutes(),
+                quiz.getSubjectName(),
+                quiz.getTargetMaterials(),
                 quiz.getCreatedAt()
         );
     }

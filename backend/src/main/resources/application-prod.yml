@@ -1,0 +1,24 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        generate_statistics: false
+
+logging:
+  level:
+    root: INFO
+    com.csscholar.backend: INFO
+    org.springframework.web: WARN
+    org.hibernate: WARN
+
+management:
+  endpoint:
+    health:
+      show-details: never
+      show-components: never

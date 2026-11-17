@@ -271,6 +271,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
             >
               <option value="Java">☕ Java</option>
               <option value="Python">🐍 Python</option>
+              <option value="JavaScript">JavaScript</option>
               <option value="Theory of Computation (TOC)">📐 Theory of Computation (TOC)</option>
               <option value="Operating Systems">💻 Operating Systems</option>
               <option value="Computer Networks">🌐 Computer Networks</option>

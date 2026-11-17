@@ -69,6 +69,9 @@ class GroqProvider(BaseLLMProvider):
             "max_tokens": cfg.max_output_tokens,
         }
         if cfg.json_mode:
+            has_json_keyword = any("json" in m["content"].lower() for m in groq_messages)
+            if not has_json_keyword and groq_messages:
+                groq_messages[-1]["content"] = groq_messages[-1]["content"] + "\nPlease format your output strictly as a valid JSON object."
             kwargs["response_format"] = {"type": "json_object"}
 
         start_time = time.perf_counter()
@@ -119,6 +122,20 @@ class GroqProvider(BaseLLMProvider):
             if ("model_not_found" in err_str or "does not exist" in err_str) and target_model != "openai/gpt-oss-120b":
                 logger.warning("Groq model %s not found, falling back to openai/gpt-oss-120b: %s", target_model, e)
                 return self.generate(messages, config, model_name="openai/gpt-oss-120b")
+            elif ("Request too large" in err_str or "rate_limit_exceeded" in err_str or "413" in err_str or "tokens per minute" in err_str):
+                logger.warning("Groq TPM/payload limit hit on model %s. Retrying with truncated context and gpt-oss-20b: %s", target_model, e)
+                try:
+                    truncated_messages = []
+                    for m in messages:
+                        if len(m.content) > 5000:
+                            truncated_messages.append(LLMMessage(role=m.role, content=m.content[:5000] + "\n[Context truncated for token budget]"))
+                        else:
+                            truncated_messages.append(m)
+                    fallback_model = "openai/gpt-oss-20b"
+                    return self.generate(truncated_messages, config, model_name=fallback_model)
+                except Exception as fallback_err:
+                    logger.error("Groq truncated fallback error: %s", fallback_err)
+                    raise ProviderUnavailableError(f"Groq generation error: {fallback_err}") from fallback_err
             elif "json_validate_failed" in err_str and cfg.json_mode:
                 logger.warning("Groq JSON mode strict validation failed. Retrying without response_format constraint: %s", e)
                 try:

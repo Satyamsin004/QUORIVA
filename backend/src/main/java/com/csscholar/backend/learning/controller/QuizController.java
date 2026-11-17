@@ -106,4 +106,24 @@ public class QuizController {
         QuizAttemptReviewDto review = quizService.getAttemptReview(attemptId, principal.getId());
         return ResponseEntity.ok(ApiResponse.success("Quiz attempt review retrieved.", review));
     }
+
+    @GetMapping("/subjects/{subjectName}/materials")
+    public ResponseEntity<ApiResponse<List<SubjectMaterialDto>>> getSubjectMaterials(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable String subjectName,
+            @RequestParam UUID workspaceId
+    ) {
+        List<SubjectMaterialDto> materials = quizService.getSubjectMaterials(principal.getId(), workspaceId, subjectName);
+        return ResponseEntity.ok(ApiResponse.success("Subject materials retrieved.", materials));
+    }
+
+    @GetMapping("/quizzes/revision-history")
+    public ResponseEntity<ApiResponse<List<QuizSummaryDto>>> getRevisionHistory(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestParam String subject,
+            @RequestParam(required = false) UUID workspaceId
+    ) {
+        List<QuizSummaryDto> history = quizService.getRevisionHistory(principal.getId(), workspaceId, subject);
+        return ResponseEntity.ok(ApiResponse.success("Revision history retrieved.", history));
+    }
 }

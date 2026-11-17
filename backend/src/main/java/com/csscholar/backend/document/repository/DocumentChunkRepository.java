@@ -12,6 +12,8 @@ public interface DocumentChunkRepository extends JpaRepository<DocumentChunk, UU
 
     List<DocumentChunk> findByDocumentIdAndProcessingVersionOrderByChunkIndexAsc(UUID documentId, int processingVersion);
 
+    List<DocumentChunk> findByDocumentIdAndPageNumberBetweenOrderByPageNumberAscChunkIndexAsc(UUID documentId, Integer startPage, Integer endPage);
+
     long countByDocumentIdAndProcessingVersion(UUID documentId, int processingVersion);
 }
 

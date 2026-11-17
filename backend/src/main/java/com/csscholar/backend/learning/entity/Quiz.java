@@ -7,7 +7,9 @@ import com.csscholar.backend.workspace.Workspace;
 import com.csscholar.backend.knowledge.entity.KnowledgeTopic;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -56,6 +58,13 @@ public class Quiz {
 
     @Column(name = "time_limit_minutes")
     private Integer timeLimitMinutes;
+
+    @Column(name = "subject_name", length = 255)
+    private String subjectName;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "target_materials", columnDefinition = "jsonb")
+    private String targetMaterials;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("questionIndex ASC")
@@ -123,6 +132,12 @@ public class Quiz {
 
     public Integer getTimeLimitMinutes() { return timeLimitMinutes; }
     public void setTimeLimitMinutes(Integer timeLimitMinutes) { this.timeLimitMinutes = timeLimitMinutes; }
+
+    public String getSubjectName() { return subjectName; }
+    public void setSubjectName(String subjectName) { this.subjectName = subjectName; }
+
+    public String getTargetMaterials() { return targetMaterials; }
+    public void setTargetMaterials(String targetMaterials) { this.targetMaterials = targetMaterials; }
 
     public List<QuizQuestion> getQuestions() { return questions; }
     public void setQuestions(List<QuizQuestion> questions) {

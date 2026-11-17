@@ -2,6 +2,16 @@ server:
   port: ${SERVER_PORT:8080}
   servlet:
     context-path: /
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml
+    min-response-size: 1024
+  tomcat:
+    threads:
+      max: ${TOMCAT_MAX_THREADS:200}
+      min-spare: ${TOMCAT_MIN_SPARE_THREADS:20}
+    connection-timeout: 20000
+    max-connections: 10000
 
 spring:
   application:
@@ -13,9 +23,10 @@ spring:
     password: ${POSTGRES_PASSWORD:postgres_dev_password}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 10
-      minimum-idle: 2
-      idle-timeout: 30000
+      maximum-pool-size: ${HIKARI_MAX_POOL_SIZE:20}
+      minimum-idle: ${HIKARI_MIN_IDLE:5}
+      idle-timeout: 300000
+      max-lifetime: 1800000
       connection-timeout: 20000
       pool-name: CsScholarHikariPool
 
@@ -37,7 +48,7 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
+      host: ${REDIS_HOST:127.0.0.1}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
       timeout: 2000ms
@@ -64,7 +75,7 @@ management:
       enabled: true
 
 ai-service:
-  url: ${AI_SERVICE_URL:http://localhost:8000}
+  url: ${AI_SERVICE_URL:http://127.0.0.1:8000}
   internal-key: ${INTERNAL_SERVICE_KEY:cs_scholar_internal_service_secret_key_change_in_production}
 
 jwt:

@@ -40,6 +40,7 @@ import {
   LearningSourceType,
   ReviewRating,
   GenerateQuizRequest,
+  TargetMaterialRequest,
   GenerateFlashcardsRequest,
   CreateManualDeckRequest,
   CreateManualCardRequest,
@@ -69,6 +70,7 @@ export const LearningStudioPage: React.FC = () => {
   const [workspaceDocs, setWorkspaceDocs] = useState<DocumentItem[]>([]);
   const [selectedSubject, setSelectedSubject] = useState<string>('ALL');
   const [selectedDocIds, setSelectedDocIds] = useState<string[]>([]);
+  const [docPageRanges, setDocPageRanges] = useState<Record<string, { isAllPages: boolean; startPage: number; endPage: number }>>({});
 
   // Active Quiz Practice State
   const [activeQuizPractice, setActiveQuizPractice] = useState<QuizPractice | null>(null);
@@ -199,7 +201,8 @@ export const LearningStudioPage: React.FC = () => {
         .then((res) => {
           const docs = res.content || [];
           setWorkspaceDocs(docs);
-          setSelectedDocIds(docs.map((d) => d.id));
+          // Do not silently include materials which still have no readable content.
+          setSelectedDocIds(docs.filter((d) => d.processingStatus === 'PROCESSED').map((d) => d.id));
         })
         .catch(() => setWorkspaceDocs([]));
     }
@@ -213,6 +216,8 @@ export const LearningStudioPage: React.FC = () => {
     selectedSubject === 'ALL'
       ? workspaceDocs
       : workspaceDocs.filter((d) => (d.subject || 'General') === selectedSubject);
+
+  const readyDocs = filteredDocs.filter((d) => d.processingStatus === 'PROCESSED');
 
   // Timer for active quiz practice
   useEffect(() => {
@@ -404,12 +409,45 @@ export const LearningStudioPage: React.FC = () => {
     try {
       const isDocScoped = selectedDocIds.length > 0;
       const topicLabel = selectedSubject !== 'ALL' ? selectedSubject : quizForm.conceptFocus;
+
+      // Build target materials with validated page ranges
+      const targetMaterials: TargetMaterialRequest[] = [];
+      for (const docId of selectedDocIds) {
+        const doc = workspaceDocs.find((d) => d.id === docId);
+        const total = doc?.pageCount || 1;
+        const range = docPageRanges[docId] || { isAllPages: true, startPage: 1, endPage: total };
+
+        if (!range.isAllPages) {
+          const start = Number(range.startPage) || 1;
+          const end = Number(range.endPage) || total;
+          if (start < 1 || end > total || start > end) {
+            setErrorMessage(`Invalid page range for "${doc?.title || 'Material'}": Must be between 1 and ${total}, and start page cannot exceed end page.`);
+            setActionLoading(false);
+            return;
+          }
+          targetMaterials.push({
+            documentId: docId,
+            startPage: start,
+            endPage: end,
+          });
+        } else {
+          targetMaterials.push({
+            documentId: docId,
+            startPage: 1,
+            endPage: total,
+          });
+        }
+      }
+
+      const isTargetedRevision = targetMaterials.length > 0;
       const req: GenerateQuizRequest = {
-        title: quizForm.title || `${topicLabel} Quiz`,
-        sourceType: isDocScoped ? 'WORKSPACE_DOCUMENTS' : 'CUSTOM',
+        title: quizForm.title || `${topicLabel} ${isTargetedRevision ? 'Revision ' : ''}Quiz`,
+        sourceType: isTargetedRevision ? 'TARGETED_REVISION' : (isDocScoped ? 'WORKSPACE_DOCUMENTS' : 'CUSTOM'),
         sourceWorkspaceId: currentWorkspace?.id,
         workspaceId: currentWorkspace?.id,
         documentIds: isDocScoped ? selectedDocIds : undefined,
+        targetMaterials: isTargetedRevision ? targetMaterials : undefined,
+        subjectName: selectedSubject !== 'ALL' ? selectedSubject : undefined,
         conceptFocus: quizForm.conceptFocus || topicLabel,
         difficulty: quizForm.difficultyLevel,
         difficultyLevel: quizForm.difficultyLevel,
@@ -791,7 +829,7 @@ export const LearningStudioPage: React.FC = () => {
                   {q.options.map((opt) => {
                     const optId = (opt as any).id || (opt as any).optionId;
                     const isUserChoice = (optId && optId === q.selectedOptionId) || opt.optionIndex === q.selectedOptionIndex;
-                    const isCorrectAnswer = opt.isCorrect || (optId && optId === q.correctOptionId);
+                    const isCorrectAnswer = Boolean(opt.isCorrect || (opt as any).correct || (optId && optId === q.correctOptionId));
 
                     let optionBorder = 'border-slate-800/80 bg-slate-950/40 text-slate-400';
                     if (isCorrectAnswer) {
@@ -1336,6 +1374,24 @@ export const LearningStudioPage: React.FC = () => {
                     {quiz.description && (
                       <p className="text-xs text-[#A1A1AA] line-clamp-2">{quiz.description}</p>
                     )}
+
+                    {quiz.targetMaterials && (
+                      <div className="pt-1">
+                        <div className="flex items-center gap-1.5 text-[10px] text-[#C7F000] font-mono bg-[#C7F000]/10 px-2 py-1 rounded-lg border border-[#C7F000]/20">
+                          <BookmarkCheck className="w-3 h-3 text-[#C7F000]" />
+                          <span className="truncate">
+                            Scope: {(() => {
+                              try {
+                                const mats = JSON.parse(quiz.targetMaterials);
+                                return mats.map((m: any) => `${m.title} (pp. ${m.startPage}-${m.endPage})`).join(', ');
+                              } catch {
+                                return 'Targeted Scope';
+                              }
+                            })()}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-[#A1A1AA]">
@@ -1350,6 +1406,38 @@ export const LearningStudioPage: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
+                      {quiz.targetMaterials && (
+                        <button
+                          onClick={() => {
+                            try {
+                              const raw = quiz.targetMaterials;
+                              if (!raw) return;
+                              const mats = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                              const docIds = mats.map((m: any) => m.documentId);
+                              setSelectedDocIds(docIds);
+                              if (quiz.subjectName) {
+                                setSelectedSubject(quiz.subjectName);
+                              }
+                              const newRanges: Record<string, any> = {};
+                              mats.forEach((m: any) => {
+                                newRanges[m.documentId] = {
+                                  isAllPages: m.startPage === 1 && m.endPage === m.pageCount,
+                                  startPage: m.startPage,
+                                  endPage: m.endPage,
+                                };
+                              });
+                              setDocPageRanges(newRanges);
+                              setIsGenerateQuizModalOpen(true);
+                            } catch {
+                              setIsGenerateQuizModalOpen(true);
+                            }
+                          }}
+                          className="px-2.5 py-1.5 bg-[#FF2D8D]/15 hover:bg-[#FF2D8D]/25 text-[#FF2D8D] font-medium rounded-full transition-colors flex items-center gap-1 border border-[#FF2D8D]/30 text-xs"
+                          title="Revise with this exact material & page scope again"
+                        >
+                          <RotateCw className="w-3 h-3" /> Revise Again
+                        </button>
+                      )}
                       <button
                         onClick={async () => {
                           if (confirm(`Delete quiz "${quiz.title}"?`)) {
@@ -1611,9 +1699,9 @@ export const LearningStudioPage: React.FC = () => {
                     {activityHistory.map((act) => (
                       <tr key={act.date} className="hover:bg-white/[0.02] transition">
                         <td className="p-4 text-[#A1A1AA]">{act.date}</td>
-                        <td className="p-4 text-[#FF2D8D] font-semibold">{act.quizzesTaken}</td>
-                        <td className="p-4 text-[#C7F000] font-semibold">{act.cardsReviewed}</td>
-                        <td className="p-4 text-zinc-300">{act.studyTimeMinutes} min</td>
+                        <td className="p-4 text-[#FF2D8D] font-semibold">{act.quizzesTaken ?? (act as any).quizAttempts ?? 0}</td>
+                        <td className="p-4 text-[#C7F000] font-semibold">{act.cardsReviewed ?? (act as any).flashcardReviews ?? 0}</td>
+                        <td className="p-4 text-zinc-300">{act.studyTimeMinutes ?? (act as any).totalMinutes ?? 0} min</td>
                       </tr>
                     ))}
                   </tbody>
@@ -1653,11 +1741,11 @@ export const LearningStudioPage: React.FC = () => {
                     const subj = e.target.value;
                     setSelectedSubject(subj);
                     if (subj === 'ALL') {
-                      setSelectedDocIds(workspaceDocs.map((d) => d.id));
+                      setSelectedDocIds(workspaceDocs.filter((d) => d.processingStatus === 'PROCESSED').map((d) => d.id));
                     } else {
                       setSelectedDocIds(
                         workspaceDocs
-                          .filter((d) => (d.subject || 'General') === subj)
+                          .filter((d) => (d.subject || 'General') === subj && d.processingStatus === 'PROCESSED')
                           .map((d) => d.id)
                       );
                     }
@@ -1680,7 +1768,7 @@ export const LearningStudioPage: React.FC = () => {
                   <div className="flex gap-2 text-[11px]">
                     <button
                       type="button"
-                      onClick={() => setSelectedDocIds(filteredDocs.map((d) => d.id))}
+                      onClick={() => setSelectedDocIds(readyDocs.map((d) => d.id))}
                       className="text-[#C7F000] hover:underline"
                     >
                       Select All
@@ -1694,7 +1782,7 @@ export const LearningStudioPage: React.FC = () => {
                     </button>
                   </div>
                 </div>
-                <div className="max-h-36 overflow-y-auto space-y-1.5 p-2 bg-[#09090B] rounded-xl border border-white/10">
+                <div className="max-h-56 overflow-y-auto space-y-2 p-2 bg-[#09090B] rounded-xl border border-white/10">
                   {filteredDocs.length === 0 ? (
                     <p className="text-[#A1A1AA] text-center py-2 text-[11px]">
                       No documents found for this subject. Upload notes to your workspace.
@@ -1702,40 +1790,139 @@ export const LearningStudioPage: React.FC = () => {
                   ) : (
                     filteredDocs.map((doc) => {
                       const isChecked = selectedDocIds.includes(doc.id);
+                      const isReady = doc.processingStatus === 'PROCESSED';
+                      const totalPgs = doc.pageCount && doc.pageCount > 0 ? doc.pageCount : 1;
+                      const range = docPageRanges[doc.id] || { isAllPages: true, startPage: 1, endPage: totalPgs };
+                      const hasRangeWarning = !range.isAllPages && (range.startPage < 1 || range.endPage > totalPgs || range.startPage > range.endPage);
+
                       return (
-                        <label
+                        <div
                           key={doc.id}
-                          className={`flex items-center gap-2.5 p-2 rounded-lg cursor-pointer transition text-[11px] ${
+                          className={`rounded-xl border transition text-[11px] overflow-hidden ${
                             isChecked
-                              ? 'bg-[#202025] text-white border border-[#FF2D8D]/30'
-                              : 'text-[#A1A1AA] hover:bg-white/5'
+                              ? 'bg-[#1C1C22] text-white border-[#FF2D8D]/40'
+                              : isReady ? 'bg-[#121215] text-[#A1A1AA] border-white/5' : 'bg-black/30 text-zinc-600 border-white/5'
                           }`}
                         >
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => {
-                              if (isChecked) {
-                                setSelectedDocIds(selectedDocIds.filter((id) => id !== doc.id));
-                              } else {
-                                setSelectedDocIds([...selectedDocIds, doc.id]);
-                              }
-                            }}
-                            className="accent-[#FF2D8D] rounded"
-                          />
-                          <span className="truncate flex-1 font-medium">
-                            {doc.title || doc.originalFilename}
-                          </span>
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400 font-mono">
-                            {doc.subject || 'General'}
-                          </span>
-                        </label>
+                          <label className="flex items-center gap-2.5 p-2.5 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              disabled={!isReady}
+                              onChange={() => {
+                                if (isChecked) {
+                                  setSelectedDocIds(selectedDocIds.filter((id) => id !== doc.id));
+                                } else {
+                                  setSelectedDocIds([...selectedDocIds, doc.id]);
+                                  if (!docPageRanges[doc.id]) {
+                                    setDocPageRanges((prev) => ({
+                                      ...prev,
+                                      [doc.id]: { isAllPages: true, startPage: 1, endPage: totalPgs },
+                                    }));
+                                  }
+                                }
+                              }}
+                              className="accent-[#FF2D8D] rounded"
+                            />
+                            <span className="truncate flex-1 font-medium text-white">
+                              {doc.title || doc.originalFilename}
+                            </span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-[#C7F000] font-mono">
+                              {totalPgs} pgs
+                            </span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400 font-mono">
+                              {isReady ? (doc.subject || 'General') : 'Processing'}
+                            </span>
+                          </label>
+
+                          {/* Targeted Page Range Controls */}
+                          {isChecked && isReady && (
+                            <div className="px-3 pb-3 pt-1 border-t border-white/5 bg-[#17171C] space-y-2">
+                              <div className="flex items-center gap-3 text-[11px]">
+                                <label className="flex items-center gap-1.5 cursor-pointer text-zinc-300">
+                                  <input
+                                    type="radio"
+                                    name={`range-mode-${doc.id}`}
+                                    checked={range.isAllPages}
+                                    onChange={() =>
+                                      setDocPageRanges((prev) => ({
+                                        ...prev,
+                                        [doc.id]: { ...range, isAllPages: true, startPage: 1, endPage: totalPgs },
+                                      }))
+                                    }
+                                    className="accent-[#FF2D8D]"
+                                  />
+                                  <span>Entire Document (Pages 1–{totalPgs})</span>
+                                </label>
+                                <label className="flex items-center gap-1.5 cursor-pointer text-zinc-300">
+                                  <input
+                                    type="radio"
+                                    name={`range-mode-${doc.id}`}
+                                    checked={!range.isAllPages}
+                                    onChange={() =>
+                                      setDocPageRanges((prev) => ({
+                                        ...prev,
+                                        [doc.id]: { ...range, isAllPages: false },
+                                      }))
+                                    }
+                                    className="accent-[#FF2D8D]"
+                                  />
+                                  <span className="text-[#FF2D8D] font-medium">Custom Page Range</span>
+                                </label>
+                              </div>
+
+                              {!range.isAllPages && (
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-zinc-400 text-[10px]">Revise From:</span>
+                                    <input
+                                      type="number"
+                                      min={1}
+                                      max={totalPgs}
+                                      value={range.startPage}
+                                      onChange={(e) => {
+                                        const val = parseInt(e.target.value) || 1;
+                                        setDocPageRanges((prev) => ({
+                                          ...prev,
+                                          [doc.id]: { ...range, startPage: val },
+                                        }));
+                                      }}
+                                      className="w-16 bg-[#09090B] border border-white/10 rounded-lg px-2 py-1 text-center text-white text-[11px] focus:outline-none focus:border-[#FF2D8D]"
+                                    />
+                                    <span className="text-zinc-400 text-[10px]">To:</span>
+                                    <input
+                                      type="number"
+                                      min={1}
+                                      max={totalPgs}
+                                      value={range.endPage}
+                                      onChange={(e) => {
+                                        const val = parseInt(e.target.value) || totalPgs;
+                                        setDocPageRanges((prev) => ({
+                                          ...prev,
+                                          [doc.id]: { ...range, endPage: val },
+                                        }));
+                                      }}
+                                      className="w-16 bg-[#09090B] border border-white/10 rounded-lg px-2 py-1 text-center text-white text-[11px] focus:outline-none focus:border-[#FF2D8D]"
+                                    />
+                                    <span className="text-zinc-500 text-[10px]">of {totalPgs} pages</span>
+                                  </div>
+
+                                  {hasRangeWarning && (
+                                    <p className="text-[10px] text-rose-400 font-medium">
+                                      * Page range must be within 1 to {totalPgs}, and start page cannot exceed end page.
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       );
                     })
                   )}
                 </div>
                 <p className="text-[11px] text-[#A1A1AA] mt-1">
-                  {selectedDocIds.length} of {filteredDocs.length} materials selected.
+                  {selectedDocIds.length} of {readyDocs.length} ready materials selected.
                 </p>
               </div>
 
@@ -1827,11 +2014,11 @@ export const LearningStudioPage: React.FC = () => {
                     const subj = e.target.value;
                     setSelectedSubject(subj);
                     if (subj === 'ALL') {
-                      setSelectedDocIds(workspaceDocs.map((d) => d.id));
+                      setSelectedDocIds(workspaceDocs.filter((d) => d.processingStatus === 'PROCESSED').map((d) => d.id));
                     } else {
                       setSelectedDocIds(
                         workspaceDocs
-                          .filter((d) => (d.subject || 'General') === subj)
+                          .filter((d) => (d.subject || 'General') === subj && d.processingStatus === 'PROCESSED')
                           .map((d) => d.id)
                       );
                     }
@@ -1854,7 +2041,7 @@ export const LearningStudioPage: React.FC = () => {
                   <div className="flex gap-2 text-[11px]">
                     <button
                       type="button"
-                      onClick={() => setSelectedDocIds(filteredDocs.map((d) => d.id))}
+                      onClick={() => setSelectedDocIds(readyDocs.map((d) => d.id))}
                       className="text-[#C7F000] hover:underline"
                     >
                       Select All
@@ -1868,7 +2055,7 @@ export const LearningStudioPage: React.FC = () => {
                     </button>
                   </div>
                 </div>
-                <div className="max-h-36 overflow-y-auto space-y-1.5 p-2 bg-[#09090B] rounded-xl border border-white/10">
+                <div className="max-h-56 overflow-y-auto space-y-2 p-2 bg-[#09090B] rounded-xl border border-white/10">
                   {filteredDocs.length === 0 ? (
                     <p className="text-[#A1A1AA] text-center py-2 text-[11px]">
                       No documents found for this subject. Upload notes to your workspace.
@@ -1876,40 +2063,139 @@ export const LearningStudioPage: React.FC = () => {
                   ) : (
                     filteredDocs.map((doc) => {
                       const isChecked = selectedDocIds.includes(doc.id);
+                      const isReady = doc.processingStatus === 'PROCESSED';
+                      const totalPgs = doc.pageCount && doc.pageCount > 0 ? doc.pageCount : 1;
+                      const range = docPageRanges[doc.id] || { isAllPages: true, startPage: 1, endPage: totalPgs };
+                      const hasRangeWarning = !range.isAllPages && (range.startPage < 1 || range.endPage > totalPgs || range.startPage > range.endPage);
+
                       return (
-                        <label
+                        <div
                           key={doc.id}
-                          className={`flex items-center gap-2.5 p-2 rounded-lg cursor-pointer transition text-[11px] ${
+                          className={`rounded-xl border transition text-[11px] overflow-hidden ${
                             isChecked
-                              ? 'bg-[#202025] text-white border border-[#FF2D8D]/30'
-                              : 'text-[#A1A1AA] hover:bg-white/5'
+                              ? 'bg-[#1C1C22] text-white border-[#FF2D8D]/40'
+                              : isReady ? 'bg-[#121215] text-[#A1A1AA] border-white/5' : 'bg-black/30 text-zinc-600 border-white/5'
                           }`}
                         >
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => {
-                              if (isChecked) {
-                                setSelectedDocIds(selectedDocIds.filter((id) => id !== doc.id));
-                              } else {
-                                setSelectedDocIds([...selectedDocIds, doc.id]);
-                              }
-                            }}
-                            className="accent-[#FF2D8D] rounded"
-                          />
-                          <span className="truncate flex-1 font-medium">
-                            {doc.title || doc.originalFilename}
-                          </span>
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400 font-mono">
-                            {doc.subject || 'General'}
-                          </span>
-                        </label>
+                          <label className="flex items-center gap-2.5 p-2.5 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              disabled={!isReady}
+                              onChange={() => {
+                                if (isChecked) {
+                                  setSelectedDocIds(selectedDocIds.filter((id) => id !== doc.id));
+                                } else {
+                                  setSelectedDocIds([...selectedDocIds, doc.id]);
+                                  if (!docPageRanges[doc.id]) {
+                                    setDocPageRanges((prev) => ({
+                                      ...prev,
+                                      [doc.id]: { isAllPages: true, startPage: 1, endPage: totalPgs },
+                                    }));
+                                  }
+                                }
+                              }}
+                              className="accent-[#FF2D8D] rounded"
+                            />
+                            <span className="truncate flex-1 font-medium text-white">
+                              {doc.title || doc.originalFilename}
+                            </span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-[#C7F000] font-mono">
+                              {totalPgs} pgs
+                            </span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400 font-mono">
+                              {isReady ? (doc.subject || 'General') : 'Processing'}
+                            </span>
+                          </label>
+
+                          {/* Targeted Page Range Controls */}
+                          {isChecked && isReady && (
+                            <div className="px-3 pb-3 pt-1 border-t border-white/5 bg-[#17171C] space-y-2">
+                              <div className="flex items-center gap-3 text-[11px]">
+                                <label className="flex items-center gap-1.5 cursor-pointer text-zinc-300">
+                                  <input
+                                    type="radio"
+                                    name={`range-mode-${doc.id}`}
+                                    checked={range.isAllPages}
+                                    onChange={() =>
+                                      setDocPageRanges((prev) => ({
+                                        ...prev,
+                                        [doc.id]: { ...range, isAllPages: true, startPage: 1, endPage: totalPgs },
+                                      }))
+                                    }
+                                    className="accent-[#FF2D8D]"
+                                  />
+                                  <span>Entire Document (Pages 1–{totalPgs})</span>
+                                </label>
+                                <label className="flex items-center gap-1.5 cursor-pointer text-zinc-300">
+                                  <input
+                                    type="radio"
+                                    name={`range-mode-${doc.id}`}
+                                    checked={!range.isAllPages}
+                                    onChange={() =>
+                                      setDocPageRanges((prev) => ({
+                                        ...prev,
+                                        [doc.id]: { ...range, isAllPages: false },
+                                      }))
+                                    }
+                                    className="accent-[#FF2D8D]"
+                                  />
+                                  <span className="text-[#FF2D8D] font-medium">Custom Page Range</span>
+                                </label>
+                              </div>
+
+                              {!range.isAllPages && (
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-zinc-400 text-[10px]">Revise From:</span>
+                                    <input
+                                      type="number"
+                                      min={1}
+                                      max={totalPgs}
+                                      value={range.startPage}
+                                      onChange={(e) => {
+                                        const val = parseInt(e.target.value) || 1;
+                                        setDocPageRanges((prev) => ({
+                                          ...prev,
+                                          [doc.id]: { ...range, startPage: val },
+                                        }));
+                                      }}
+                                      className="w-16 bg-[#09090B] border border-white/10 rounded-lg px-2 py-1 text-center text-white text-[11px] focus:outline-none focus:border-[#FF2D8D]"
+                                    />
+                                    <span className="text-zinc-400 text-[10px]">To:</span>
+                                    <input
+                                      type="number"
+                                      min={1}
+                                      max={totalPgs}
+                                      value={range.endPage}
+                                      onChange={(e) => {
+                                        const val = parseInt(e.target.value) || totalPgs;
+                                        setDocPageRanges((prev) => ({
+                                          ...prev,
+                                          [doc.id]: { ...range, endPage: val },
+                                        }));
+                                      }}
+                                      className="w-16 bg-[#09090B] border border-white/10 rounded-lg px-2 py-1 text-center text-white text-[11px] focus:outline-none focus:border-[#FF2D8D]"
+                                    />
+                                    <span className="text-zinc-500 text-[10px]">of {totalPgs} pages</span>
+                                  </div>
+
+                                  {hasRangeWarning && (
+                                    <p className="text-[10px] text-rose-400 font-medium">
+                                      * Page range must be within 1 to {totalPgs}, and start page cannot exceed end page.
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       );
                     })
                   )}
                 </div>
                 <p className="text-[11px] text-[#A1A1AA] mt-1">
-                  {selectedDocIds.length} of {filteredDocs.length} materials selected.
+                  {selectedDocIds.length} of {readyDocs.length} ready materials selected.
                 </p>
               </div>
 

@@ -16,6 +16,8 @@ public class QuizSummaryDto {
     private LearningDifficultyLevel difficultyLevel;
     private int totalQuestions;
     private Integer timeLimitMinutes;
+    private String subjectName;
+    private String targetMaterials;
     private Instant createdAt;
 
     public QuizSummaryDto() {}
@@ -31,6 +33,22 @@ public class QuizSummaryDto {
         this.difficultyLevel = difficultyLevel;
         this.totalQuestions = totalQuestions;
         this.timeLimitMinutes = timeLimitMinutes;
+        this.createdAt = createdAt;
+    }
+
+    public QuizSummaryDto(UUID id, String title, String description, LearningSourceType sourceType,
+                          String sourceId, LearningDifficultyLevel difficultyLevel, int totalQuestions,
+                          Integer timeLimitMinutes, String subjectName, String targetMaterials, Instant createdAt) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.sourceType = sourceType;
+        this.sourceId = sourceId;
+        this.difficultyLevel = difficultyLevel;
+        this.totalQuestions = totalQuestions;
+        this.timeLimitMinutes = timeLimitMinutes;
+        this.subjectName = subjectName;
+        this.targetMaterials = targetMaterials;
         this.createdAt = createdAt;
     }
 
@@ -57,6 +75,12 @@ public class QuizSummaryDto {
 
     public Integer getTimeLimitMinutes() { return timeLimitMinutes; }
     public void setTimeLimitMinutes(Integer timeLimitMinutes) { this.timeLimitMinutes = timeLimitMinutes; }
+
+    public String getSubjectName() { return subjectName; }
+    public void setSubjectName(String subjectName) { this.subjectName = subjectName; }
+
+    public String getTargetMaterials() { return targetMaterials; }
+    public void setTargetMaterials(String targetMaterials) { this.targetMaterials = targetMaterials; }
 
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }

@@ -27,7 +27,7 @@ public class TutorClient {
     private final ObjectMapper objectMapper;
 
     public TutorClient(
-            @Value("${ai-service.url:http://localhost:8000}") String aiServiceUrl,
+            @Value("${ai-service.url:http://127.0.0.1:8000}") String aiServiceUrl,
             @Value("${ai-service.internal-key:cs_scholar_internal_service_secret_key_change_in_production}") String internalServiceKey,
             ObjectMapper objectMapper
     ) {
@@ -36,7 +36,7 @@ public class TutorClient {
         this.objectMapper = objectMapper;
         this.httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
-                .connectTimeout(Duration.ofSeconds(10))
+                .connectTimeout(Duration.ofSeconds(15))
                 .build();
     }
 
@@ -47,7 +47,7 @@ public class TutorClient {
 
             HttpRequest.Builder reqBuilder = HttpRequest.newBuilder()
                     .uri(URI.create(endpoint))
-                    .timeout(Duration.ofSeconds(60))
+                    .timeout(Duration.ofSeconds(180))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(bodyJson));
 

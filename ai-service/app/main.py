@@ -15,6 +15,19 @@ from app.api.routes.internal.learning import router as learning_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Initializing CS Scholar AI Service [%s]", settings.app_env)
+    import threading
+    def _warmup():
+        try:
+            from app.embeddings.model import EmbeddingModel
+            EmbeddingModel.get_instance().get_model()
+            logger.info("Embedding model pre-warmed successfully.")
+            from app.retrieval.reranker import CrossEncoderReranker
+            CrossEncoderReranker.get_instance().get_model()
+            logger.info("Cross-Encoder reranker pre-warmed successfully.")
+            logger.info("Background model warmup complete.")
+        except Exception as e:
+            logger.warning("Background model warmup error: %s", e)
+    threading.Thread(target=_warmup, daemon=True).start()
     yield
     logger.info("Shutting down CS Scholar AI Service")
 

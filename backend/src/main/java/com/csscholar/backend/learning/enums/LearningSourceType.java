@@ -5,6 +5,7 @@ public enum LearningSourceType {
     KNOWLEDGE_TOPIC,
     LIBRARY_RESOURCE,
     CUSTOM,
-    MANUAL
+    MANUAL,
+    TARGETED_REVISION
 }
 

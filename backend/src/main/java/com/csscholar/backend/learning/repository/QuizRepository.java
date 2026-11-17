@@ -15,6 +15,10 @@ public interface QuizRepository extends JpaRepository<Quiz, UUID> {
 
     List<Quiz> findByUserIdOrderByCreatedAtDesc(UUID userId);
 
+    List<Quiz> findByUserIdAndSubjectNameOrderByCreatedAtDesc(UUID userId, String subjectName);
+
+    List<Quiz> findByUserIdAndWorkspaceIdAndSubjectNameOrderByCreatedAtDesc(UUID userId, UUID workspaceId, String subjectName);
+
     Page<Quiz> findByUserId(UUID userId, Pageable pageable);
 
     Page<Quiz> findByUserIdAndWorkspaceId(UUID userId, UUID workspaceId, Pageable pageable);

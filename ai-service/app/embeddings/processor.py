@@ -142,7 +142,9 @@ class EmbeddingProcessor:
                 modified_chunk_ids = list({s["chunk_id"] for s in segments_needing_inference})
                 self.repository.delete_embeddings_for_chunks(modified_chunk_ids, model_name, model_version)
 
-                BATCH_CHUNK_SIZE = 64
+                # Respect the configured inference batch size.  A fixed 64-item batch
+                # can exhaust CPU/GPU memory and make every later document appear stuck.
+                BATCH_CHUNK_SIZE = max(1, embedding_config.batch_size)
                 for i in range(0, len(segments_needing_inference), BATCH_CHUNK_SIZE):
                     # Check if document was deleted mid-generation
                     with get_db_session() as db:

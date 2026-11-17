@@ -45,6 +45,14 @@ public class GenerateQuizRequest {
     private String conceptFocus;
     private Integer timeLimitMinutes;
 
+    @JsonProperty("subjectName")
+    @JsonAlias({"subject", "subject_name"})
+    private String subjectName;
+
+    @JsonProperty("targetMaterials")
+    @JsonAlias({"target_materials", "materials"})
+    private List<TargetMaterialRequest> targetMaterials;
+
     public GenerateQuizRequest() {}
 
     public UUID getWorkspaceId() { return workspaceId; }
@@ -76,5 +84,11 @@ public class GenerateQuizRequest {
 
     public Integer getTimeLimitMinutes() { return timeLimitMinutes; }
     public void setTimeLimitMinutes(Integer timeLimitMinutes) { this.timeLimitMinutes = timeLimitMinutes; }
+
+    public String getSubjectName() { return subjectName; }
+    public void setSubjectName(String subjectName) { this.subjectName = subjectName; }
+
+    public List<TargetMaterialRequest> getTargetMaterials() { return targetMaterials; }
+    public void setTargetMaterials(List<TargetMaterialRequest> targetMaterials) { this.targetMaterials = targetMaterials; }
 }
 

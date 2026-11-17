@@ -23,6 +23,8 @@ public interface DocumentRepository extends JpaRepository<Document, UUID>, JpaSp
 
     List<Document> findByWorkspaceIdAndDeletedAtIsNull(UUID workspaceId);
 
+    List<Document> findByWorkspaceIdAndSubjectAndDeletedAtIsNull(UUID workspaceId, String subject);
+
     @Query("SELECT d FROM Document d JOIN FETCH d.owner JOIN FETCH d.workspace WHERE d.id = :id")
     Optional<Document> findByIdWithDetails(@Param("id") UUID id);
 

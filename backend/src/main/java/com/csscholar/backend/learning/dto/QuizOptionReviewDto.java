@@ -1,5 +1,7 @@
 package com.csscholar.backend.learning.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.UUID;
 
 public class QuizOptionReviewDto {
@@ -7,6 +9,9 @@ public class QuizOptionReviewDto {
     private UUID id;
     private int optionIndex;
     private String optionText;
+
+    @JsonProperty("isCorrect")
+    @JsonAlias({"is_correct", "correct", "isCorrect"})
     private boolean isCorrect;
 
     public QuizOptionReviewDto() {}
@@ -28,6 +33,6 @@ public class QuizOptionReviewDto {
     public void setOptionText(String optionText) { this.optionText = optionText; }
 
     public boolean isCorrect() { return isCorrect; }
-    public void setCorrect(boolean correct) { isCorrect = correct; }
+    public void setCorrect(boolean correct) { this.isCorrect = correct; }
 }
 

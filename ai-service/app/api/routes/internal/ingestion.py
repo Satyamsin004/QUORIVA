@@ -121,9 +121,20 @@ def trigger_document_ingestion(
         db.commit()
     except Exception as e:
         logger.error("Failed to enqueue Celery task for document %s: %s", request.document_id, e)
-        # Still record the job as queued or failed if broker is down
+        # Do not leave the material permanently "pending" when the broker is unavailable.
+        # A later upload/retry must be able to create a clean job for this document.
+        job.status = "FAILED"
+        job.completed_at = datetime.now(timezone.utc)
         job.error_message = f"Failed to enqueue task: {e}"
+        doc.processing_status = "FAILED"
+        doc.updated_at = datetime.now(timezone.utc)
         db.commit()
+        # The Spring outbox must see this as a dispatch failure and retry it;
+        # returning 202 here would incorrectly mark the outbox as dispatched.
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Ingestion queue is temporarily unavailable"
+        )
 
     return IngestionJobResponse(
         job_id=job.id,
